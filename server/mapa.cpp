@@ -20,14 +20,15 @@ void nacitajMapu (string filename, stav& S, const int pocHrac) {
 	vector<int> starty;
 	for (int i=0; i<(int)S.cely.size(); i++) {
 		S.cely[i].id = i;
-		if (S.cely[i].vlastnik != -1) {
+		S.cely[i].vlastnik = -1;
+		if (S.cely[i].zistiPop() > 0) {
 			starty.push_back(i);
 		}
 	}
 	random_shuffle(starty.begin(), starty.end());
-	for (int i=0; i<(int)starty.size(); i++) {
+	for (int i=0; i<pocHrac; i++) {
 		int kto = starty[i];
-		S.cely[kto].vlastnik = (i < pocHrac ? i : -1);
+		S.cely[kto].vlastnik = i;
 	}
 
 	S.urciVlastnictvo();

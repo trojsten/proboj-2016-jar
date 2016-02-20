@@ -7,22 +7,22 @@ using namespace std;
 int velkyCas;
 
 
-static string bod::nazovtyp () const {
+string bod::nazovtyp () {
 	return "bod";
 }
-static string bunka::nazovtyp () const {
+string bunka::nazovtyp () {
 	return "bunka";
 }
-static string invazia::nazovtyp () const {
+string invazia::nazovtyp () {
 	return "invazia";
 }
-static string invAlt::nazovtyp () const {
+string invAlt::nazovtyp () {
 	return "invAlt";
 }
-static string stav::nazovtyp () const {
+string stav::nazovtyp () {
 	return "stav";
 }
-static string stavAlt::nazovtyp () const {
+string stavAlt::nazovtyp () {
 	return "stavAlt";
 }
 
@@ -44,6 +44,10 @@ double bod::dist () const {
 bunka::bunka () {}
 
 int bunka::zistiPop () {
+	if (vlastnik == -1) { // neobsadene bunky nerastu
+		poslCas = velkyCas;
+		return populacia;
+	}
 	populacia += (velkyCas - poslCas)*rast;
 	if (populacia > kapacita) {
 		populacia = kapacita;

@@ -1,9 +1,9 @@
-package common.bunka;
+package common;
 
 import java.io.*;
 import java.util.*;
 import common.Marshal;
-import common.bod.*;
+import common.Bod;
 import common.Common;
 
 public class Bunka
@@ -17,7 +17,18 @@ public class Bunka
 	public int utok, obrana, stena;
 	public Bod pozicia;
 
-	public Bunka () {}
+	public Bunka () {
+		populacia = 0;
+		poslCas = 0;
+		id = -1;
+		vlastnik = -1;
+		kapacita = 0;
+		rast = 0;
+		utok = 0;
+		obrana = 0;
+		stena = 0;
+		pozicia = new Bod();
+	}
 	public Bunka (Bunka vzor) {
 		populacia = vzor.populacia;
 		poslCas = vzor.poslCas;
@@ -32,6 +43,10 @@ public class Bunka
 	}
 
 	public int zistiPop () {
+		if (vlastnik == -1) {
+			poslCas = Common.velkyCas;
+			return populacia;
+		}
 		populacia += (poslCas - Common.velkyCas)*rast;
 		if (populacia > kapacita) {
 			populacia = kapacita;
@@ -62,6 +77,6 @@ public class Bunka
 	public void koduj (PrintStream out) {
 		out.format("bunka ");
 		uloz(out);
-		out.format("%n");
+		out.format("\n");
 	}
 }

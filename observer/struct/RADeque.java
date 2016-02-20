@@ -1,10 +1,15 @@
-package deque;
+package struct;
 
 import java.util.*;
 
-public class Deque<T>
+public class RADeque<T>
 {
 	private ArrayList<T> front, back;
+
+	public RADeque () {
+		front = new ArrayList<T>();
+		back = new ArrayList<T>();
+	}
 
 	public int size () {
 		return front.size() + back.size();

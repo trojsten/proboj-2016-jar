@@ -1,12 +1,12 @@
-package common.stavalt;
+package common;
 
 import java.io.*;
 import java.util.*;
 import common.Marshal;
-import common.bunka.*;
-import common.invalt.*;
-import common.invazia.*;
-import common.stav.*;
+import common.Bunka;
+import common.InvAlt;
+import common.Invazia;
+import common.Stav;
 import common.Common;
 
 public class StavAlt
@@ -16,8 +16,13 @@ public class StavAlt
 	public ArrayList<Bunka> cely;
 	public ArrayList<InvAlt> invZoznam;
 
-	public StavAlt () {}
+	public StavAlt () {
+		cas = 0;
+		cely = new ArrayList<Bunka>();
+		invZoznam = new ArrayList<InvAlt>();
+	}
 	public StavAlt (Stav S) {
+		this();
 		cas = S.cas;
 		for (int i=0; i<S.cely.size(); i++) {
 			Bunka cel = new Bunka(S.cely.get(i));
@@ -61,6 +66,6 @@ public class StavAlt
 	public void koduj (PrintStream out) {
 		out.format("stavAlt ");
 		uloz(out);
-		out.format("%n");
+		out.format("\n");
 	}
 }

@@ -1,21 +1,23 @@
-package common.invalt;
+package common;
 
 import java.io.*;
 import java.util.*;
 import common.Marshal;
-import common.invazia.*;
+import common.Invazia;
 
 public class InvAlt
 	implements Marshal
 {
 	public int prichod, utocnik, obranca, jednotiek;
 
-	public InvAlt () {}
 	public InvAlt (int _prichod, int _utocnik, int _obranca, int _jednotiek) {
 		prichod = _prichod;
 		utocnik = _utocnik;
 		obranca = _obranca;
 		jednotiek = _jednotiek;
+	}
+	public InvAlt () {
+		this(0,0,0,0);
 	}
 	public InvAlt (Invazia inv) {
 		prichod = inv.prichod;
@@ -36,6 +38,6 @@ public class InvAlt
 	public void koduj (PrintStream out) {
 		out.format("invAlt ");
 		uloz(out);
-		out.format("%n");
+		out.format("\n");
 	}
 }

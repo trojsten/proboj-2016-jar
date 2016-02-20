@@ -48,6 +48,8 @@ void inicializujSignaly (void (*_cleanupFunkcia)()) {
   signal(SIGINT, shutdownHandler);
   signal(SIGTERM, shutdownHandler);
   signal(SIGHUP, shutdownHandler);
+  signal(SIGSEGV, shutdownHandler);
+  signal(SIGFPE, shutdownHandler);
   signal(SIGPIPE, SIG_IGN);
 }
 

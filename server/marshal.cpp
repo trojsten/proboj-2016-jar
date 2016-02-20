@@ -31,7 +31,8 @@ template<> void nacitaj<int> (istream& buf, int& out) {
 
 void dekodujStav (istream& buf, stav& out) {
 	string prikaz;
-	while (buf >> prikaz) {
+	buf >> prikaz;
+	while (!(prikaz == "end")) {
 		if (prikaz == "bunka") {
 			bunka cel;
 			nacitaj(buf,cel);
@@ -52,5 +53,6 @@ void dekodujStav (istream& buf, stav& out) {
 			buf >> ncas;
 			out.nastavCas(ncas);
 		}
+		buf >> prikaz;
 	}
 }

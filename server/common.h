@@ -31,7 +31,7 @@ struct bod {
 	bod operator- (const bod A) const ;
 	double dist () const ;
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 struct bunka {
@@ -48,7 +48,7 @@ struct bunka {
 	int zistiPop () ; // jedina vec co zavisi od velkyCas, pre pohodlnost (inak by sa dala spravit s 1 argumentom casom)
 	int def () ; // celkova obranna sila bunky
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 struct invazia {
@@ -63,7 +63,7 @@ struct invazia {
 	int atk () ; // celkova utocna sila invazie
 	int def () ; // celkova obranna sila obrancu
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 struct invAlt { // pouzivane len pri komunikacii
@@ -73,7 +73,7 @@ struct invAlt { // pouzivane len pri komunikacii
 	invAlt (int _prichod, int _utocnik, int _obranca, int _jednotiek) ;
 	invAlt (invazia inv) ;
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 struct compBunkaPtr {
@@ -98,7 +98,7 @@ struct stav {
 
 	int vyherca () ;
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 struct stavAlt { // pouzivane len pri komunikacii
@@ -109,7 +109,7 @@ struct stavAlt { // pouzivane len pri komunikacii
 	stavAlt () ;
 	stavAlt (stav& S) ;
 
-	static string nazovtyp () const ;
+	static string nazovtyp () ;
 };
 
 #endif

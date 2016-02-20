@@ -1,403 +1,1079 @@
-stavAlt 0 5 0 0 0 -1 100 1 1 1 10 200 200 0 0 1 -1 100 1 1 1 10 400 200 0 0 2 1 100 1 1 1 10 600 200 0 0 3 0 100 1 1 1 10 800 200 0 0 4 -1 100 1 1 1 10 1000 200 0 
+stavAlt 0 5 1 0 0 -1 100 1 1 1 10 200 200 1 0 1 1 100 1 1 1 10 400 200 1 0 2 -1 100 1 1 1 10 600 200 1 0 3 0 100 1 1 1 10 800 200 1 0 4 -1 100 1 1 1 10 1000 200 0 
 cas 1
+end
 cas 2
+end
 cas 3
+end
 cas 4
+end
 cas 5
+end
 cas 6
+end
 cas 7
+end
 cas 8
+end
 cas 9
+end
 cas 10
+end
 cas 11
+end
 cas 12
+end
 cas 13
+end
 cas 14
+end
 cas 15
+end
 cas 16
+end
 cas 17
+end
 cas 18
+end
 cas 19
+end
 cas 20
+end
 cas 21
+end
 cas 22
+end
 cas 23
+end
 cas 24
+end
 cas 25
+end
 cas 26
+end
 cas 27
+end
 cas 28
+end
 cas 29
+end
 cas 30
+end
 cas 31
+end
 cas 32
+end
 cas 33
+end
 cas 34
+end
 cas 35
+end
 cas 36
+end
 cas 37
+end
 cas 38
+end
 cas 39
+end
 cas 40
+end
 cas 41
+end
 cas 42
+end
 cas 43
+end
 cas 44
+end
 cas 45
+end
 cas 46
+end
 cas 47
+end
 cas 48
+end
 cas 49
+end
 cas 50
+end
 cas 51
+end
 cas 52
+end
 cas 53
+end
 cas 54
+end
 cas 55
+end
 cas 56
+end
 cas 57
+end
 cas 58
+end
 cas 59
+end
 cas 60
+end
 cas 61
+end
 cas 62
+end
 cas 63
+end
 cas 64
+end
 cas 65
+end
 cas 66
+end
 cas 67
+end
 cas 68
+end
 cas 69
+end
 cas 70
+end
 cas 71
+end
 cas 72
+end
 cas 73
+end
 cas 74
+end
 cas 75
+end
 cas 76
+end
 cas 77
+end
 cas 78
+end
 cas 79
+end
 cas 80
+end
 cas 81
+end
 cas 82
+end
 cas 83
+end
 cas 84
+end
 cas 85
+end
 cas 86
+end
 cas 87
+end
 cas 88
+end
 cas 89
+end
 cas 90
+end
 cas 91
+end
 cas 92
+end
 cas 93
+end
 cas 94
+end
 cas 95
+end
 cas 96
+end
 cas 97
+end
 cas 98
+end
 cas 99
+end
 cas 100
+end
 cas 101
+end
 cas 102
+end
 cas 103
+end
 cas 104
+end
 cas 105
+end
 cas 106
+end
 cas 107
+end
 cas 108
+end
 cas 109
+end
 cas 110
+end
 cas 111
+end
 cas 112
+end
 cas 113
+end
 cas 114
+end
 cas 115
+end
 cas 116
+end
 cas 117
+end
 cas 118
+end
 cas 119
+end
 cas 120
+end
 cas 121
+end
 cas 122
+end
 cas 123
+end
 cas 124
+end
 cas 125
+end
 cas 126
+end
 cas 127
+end
 cas 128
+end
 cas 129
+end
 cas 130
+end
 cas 131
+end
 cas 132
+end
 cas 133
+end
 cas 134
+end
 cas 135
+end
 cas 136
+end
 cas 137
+end
 cas 138
+end
 cas 139
+end
 cas 140
+end
 cas 141
+end
 cas 142
+end
 cas 143
+end
 cas 144
+end
 cas 145
+end
 cas 146
+end
 cas 147
+end
 cas 148
+end
 cas 149
+end
 cas 150
+end
 cas 151
+end
 cas 152
+end
 cas 153
+end
 cas 154
+end
 cas 155
+end
 cas 156
+end
 cas 157
+end
 cas 158
+end
 cas 159
+end
 cas 160
+end
 cas 161
+end
 cas 162
+end
 cas 163
+end
 cas 164
+end
 cas 165
+end
 cas 166
+end
 cas 167
+end
 cas 168
+end
 cas 169
+end
 cas 170
+end
 cas 171
+end
 cas 172
+end
 cas 173
+end
 cas 174
+end
 cas 175
+end
 cas 176
+end
 cas 177
+end
 cas 178
+end
 cas 179
+end
 cas 180
+end
 cas 181
+end
 cas 182
+end
 cas 183
+end
 cas 184
+end
 cas 185
+end
 cas 186
+end
 cas 187
+end
 cas 188
+end
 cas 189
+end
 cas 190
+end
 cas 191
+end
 cas 192
+end
 cas 193
+end
 cas 194
+end
 cas 195
+end
 cas 196
+end
 cas 197
+end
 cas 198
+end
 cas 199
+end
 cas 200
+end
 cas 201
+end
 cas 202
+end
 cas 203
+end
 cas 204
+end
 cas 205
+end
 cas 206
+end
 cas 207
+end
 cas 208
+end
 cas 209
+end
 cas 210
+end
 cas 211
+end
 cas 212
+end
 cas 213
+end
 cas 214
+end
 cas 215
+end
 cas 216
+end
 cas 217
+end
 cas 218
+end
 cas 219
+end
 cas 220
+end
 cas 221
+end
 cas 222
+end
 cas 223
+end
 cas 224
+end
 cas 225
+end
 cas 226
+end
 cas 227
+end
 cas 228
+end
 cas 229
+end
 cas 230
+end
 cas 231
+end
 cas 232
+end
 cas 233
+end
 cas 234
+end
 cas 235
+end
 cas 236
+end
 cas 237
+end
 cas 238
+end
 cas 239
+end
 cas 240
+end
 cas 241
+end
 cas 242
+end
 cas 243
+end
 cas 244
+end
 cas 245
+end
 cas 246
+end
 cas 247
+end
 cas 248
+end
 cas 249
+end
 cas 250
+end
 cas 251
+end
 cas 252
+end
 cas 253
+end
 cas 254
+end
 cas 255
+end
 cas 256
+end
 cas 257
+end
 cas 258
+end
 cas 259
+end
 cas 260
+end
 cas 261
+end
 cas 262
+end
 cas 263
+end
 cas 264
+end
 cas 265
+end
 cas 266
+end
 cas 267
+end
 cas 268
+end
 cas 269
+end
 cas 270
+end
 cas 271
+end
 cas 272
+end
 cas 273
+end
 cas 274
+end
 cas 275
+end
 cas 276
+end
 cas 277
+end
 cas 278
+end
 cas 279
+end
 cas 280
+end
 cas 281
+end
 cas 282
+end
 cas 283
+end
 cas 284
+end
 cas 285
+end
 cas 286
+end
 cas 287
+end
 cas 288
+end
 cas 289
+end
 cas 290
+end
 cas 291
+end
 cas 292
+end
 cas 293
+end
 cas 294
+end
 cas 295
+end
 cas 296
+end
 cas 297
+end
 cas 298
+end
 cas 299
+end
 cas 300
+end
 cas 301
+end
 cas 302
+end
 cas 303
+end
 cas 304
+end
 cas 305
+end
 cas 306
+end
 cas 307
+end
 cas 308
+end
 cas 309
+end
 cas 310
+end
 cas 311
+end
 cas 312
+end
 cas 313
+end
 cas 314
+end
 cas 315
+end
 cas 316
+end
 cas 317
+end
 cas 318
+end
 cas 319
+end
 cas 320
+end
 cas 321
+end
 cas 322
+end
 cas 323
+end
 cas 324
+end
 cas 325
+end
 cas 326
+end
 cas 327
+end
 cas 328
+end
 cas 329
+end
 cas 330
+end
 cas 331
+end
 cas 332
+end
 cas 333
+end
 cas 334
+end
 cas 335
+end
 cas 336
+end
 cas 337
+end
 cas 338
+end
 cas 339
+end
 cas 340
+end
 cas 341
+end
 cas 342
+end
 cas 343
+end
 cas 344
+end
 cas 345
+end
 cas 346
+end
 cas 347
+end
 cas 348
+end
 cas 349
+end
 cas 350
+end
 cas 351
+end
 cas 352
+end
 cas 353
+end
 cas 354
+end
 cas 355
+end
 cas 356
+end
 cas 357
+end
 cas 358
+end
 cas 359
+end
 cas 360
+end
 cas 361
+end
 cas 362
+end
 cas 363
+end
 cas 364
+end
 cas 365
+end
 cas 366
+end
 cas 367
+end
 cas 368
+end
 cas 369
+end
 cas 370
+end
 cas 371
+end
 cas 372
+end
 cas 373
+end
 cas 374
+end
 cas 375
+end
 cas 376
+end
 cas 377
+end
 cas 378
+end
 cas 379
+end
 cas 380
+end
 cas 381
+end
 cas 382
+end
 cas 383
+end
 cas 384
+end
 cas 385
+end
 cas 386
+end
 cas 387
+end
 cas 388
+end
 cas 389
+end
 cas 390
+end
 cas 391
+end
 cas 392
+end
 cas 393
+end
 cas 394
+end
 cas 395
+end
 cas 396
+end
 cas 397
+end
 cas 398
+end
 cas 399
+end
 cas 400
+end
 cas 401
+end
 cas 402
+end
+cas 403
+end
+cas 404
+end
+cas 405
+end
+cas 406
+end
+cas 407
+end
+cas 408
+end
+cas 409
+end
+cas 410
+end
+cas 411
+end
+cas 412
+end
+cas 413
+end
+cas 414
+end
+cas 415
+end
+cas 416
+end
+cas 417
+end
+cas 418
+end
+cas 419
+end
+cas 420
+end
+cas 421
+end
+cas 422
+end
+cas 423
+end
+cas 424
+end
+cas 425
+end
+cas 426
+end
+cas 427
+end
+cas 428
+end
+cas 429
+end
+cas 430
+end
+cas 431
+end
+cas 432
+end
+cas 433
+end
+cas 434
+end
+cas 435
+end
+cas 436
+end
+cas 437
+end
+cas 438
+end
+cas 439
+end
+cas 440
+end
+cas 441
+end
+cas 442
+end
+cas 443
+end
+cas 444
+end
+cas 445
+end
+cas 446
+end
+cas 447
+end
+cas 448
+end
+cas 449
+end
+cas 450
+end
+cas 451
+end
+cas 452
+end
+cas 453
+end
+cas 454
+end
+cas 455
+end
+cas 456
+end
+cas 457
+end
+cas 458
+end
+cas 459
+end
+cas 460
+end
+cas 461
+end
+cas 462
+end
+cas 463
+end
+cas 464
+end
+cas 465
+end
+cas 466
+end
+cas 467
+end
+cas 468
+end
+cas 469
+end
+cas 470
+end
+cas 471
+end
+cas 472
+end
+cas 473
+end
+cas 474
+end
+cas 475
+end
+cas 476
+end
+cas 477
+end
+cas 478
+end
+cas 479
+end
+cas 480
+end
+cas 481
+end
+cas 482
+end
+cas 483
+end
+cas 484
+end
+cas 485
+end
+cas 486
+end
+cas 487
+end
+cas 488
+end
+cas 489
+end
+cas 490
+end
+cas 491
+end
+cas 492
+end
+cas 493
+end
+cas 494
+end
+cas 495
+end
+cas 496
+end
+cas 497
+end
+cas 498
+end
+cas 499
+end
+cas 500
+end
+cas 501
+end
+cas 502
+end
+cas 503
+end
+cas 504
+end
+cas 505
+end
+cas 506
+end
+cas 507
+end
+cas 508
+end
+cas 509
+end
+cas 510
+end
+cas 511
+end
+cas 512
+end
+cas 513
+end
+cas 514
+end
+cas 515
+end
+cas 516
+end
+cas 517
+end
+cas 518
+end
+cas 519
+end
+cas 520
+end
+cas 521
+end
+cas 522
+end
+cas 523
+end
+cas 524
+end
+cas 525
+end
+cas 526
+end
+cas 527
+end
+cas 528
+end
+cas 529
+end
+cas 530
+end
+cas 531
+end
+cas 532
+end
+cas 533
+end
+cas 534
+end
+cas 535
+end
+cas 536
+end
+cas 537
+end
+cas 538
+end
+cas 539
+end

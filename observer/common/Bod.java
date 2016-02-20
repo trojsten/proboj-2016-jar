@@ -1,4 +1,4 @@
-package common.bod;
+package common;
 
 import java.util.*;
 import java.math.*;
@@ -39,6 +39,6 @@ public class Bod
 	public void koduj (PrintStream out) {
 		out.format("bod ");
 		uloz(out);
-		out.format("%n");
+		out.format("\n");
 	}
 }

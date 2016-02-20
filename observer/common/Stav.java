@@ -1,11 +1,13 @@
-package common.stav;
+package common;
 
 import java.util.*;
-import common.bunka.*;
-import common.invazia.*;
-import common.invalt.*;
-import common.stavalt.*;
+import java.io.*;
+import common.Bunka;
+import common.Invazia;
+import common.InvAlt;
+import common.StavAlt;
 import common.Common;
+import struct.RADeque;
 
 class CompBunka implements Comparator<Bunka> {
 	public int compare (Bunka a, Bunka b) {
@@ -18,11 +20,18 @@ public class Stav
 	public int cas;
 	public ArrayList<Bunka> cely;
 	public ArrayList<TreeSet<Bunka> > vlastnim;
-	public ArrayList<ArrayList<deque.Deque<Invazia> > > invPodlaHrany;
-	public deque.Deque<ArrayList<Invazia> > invPodlaCasu;
+	public ArrayList<ArrayList<RADeque<Invazia> > > invPodlaHrany;
+	public RADeque<ArrayList<Invazia> > invPodlaCasu;
 
-	public Stav () {}
+	public Stav () {
+		cas = 0;
+		cely = new ArrayList<Bunka>();
+		vlastnim = new ArrayList<TreeSet<Bunka> >();
+		invPodlaHrany = new ArrayList<ArrayList<RADeque<Invazia> > >();
+		invPodlaCasu = new RADeque<ArrayList<Invazia> >();
+	}
 	public Stav (StavAlt S) {
+		this();
 		cas = S.cas;
 		for (int i=0; i<S.cely.size(); i++) {
 			Bunka cel = new Bunka(S.cely.get(i));
@@ -103,9 +112,11 @@ public class Stav
 	}
 
 	public void dekodujStav (Scanner sc) {
-		String prikaz;
 		while (sc.hasNext()) {
-			prikaz = sc.next();
+			String prikaz = sc.next();
+			if (prikaz.equals("end")) {
+				break;
+			}
 			if (prikaz.equals("bunka")) {
 				Bunka cel = new Bunka();
 				cel.nacitaj(sc);
@@ -119,6 +130,8 @@ public class Stav
 			if (prikaz.equals("stavAlt")) {
 				StavAlt salt = new StavAlt();
 				salt.nacitaj(sc);
+
+				// debilne skopiruj stav
 				Stav novy = new Stav(salt);
 				cas = novy.cas;
 				cely = novy.cely;

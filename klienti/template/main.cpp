@@ -21,10 +21,9 @@ int main() {
 
   while (cin.good()) {
 		string nieco;
-		cin >> nieco;
-		while (true) {
-			cout << "trololo\n";
-		}
+		getline(cin,nieco);
+		cerr << nieco << "\n";
+		cout << "desc\n";
 	}
 
   return 0;

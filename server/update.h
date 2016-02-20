@@ -9,6 +9,6 @@
 
 string stavDesc (stav& stavHry) ;
 
-void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& normAns, vector<bool>& reseteri) ;
+void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) ;
 
 #endif

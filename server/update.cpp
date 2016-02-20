@@ -40,6 +40,11 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 }
 
 void vykonaj (invazia inv, stav& stavHry) {
+	int kto[2] = {inv.utocnik->vlastnik, inv.obranca->vlastnik};
+	if (kto[0] == kto[1]) {
+		stavHry.nastavBunku(inv.obranca->id, kto[0], inv.obranca->zistiPop() + inv.jednotiek);
+		return;
+	}
 	int povjedn[2] = {inv.jednotiek, inv.obranca->zistiPop()};
 	int povpow[2] = {inv.atk(), inv.def()};
 	int pow[2];
@@ -49,7 +54,6 @@ void vykonaj (invazia inv, stav& stavHry) {
 		}
 		pow[i] = povpow[i];
 	}
-	int kto[2] = {inv.utocnik->vlastnik, inv.obranca->vlastnik};
 	int nenulovych = 0;
 	for (int i=0; i<2; i++) {
 		nenulovych += (pow[i]>0);
@@ -82,7 +86,7 @@ void vykonaj (invazia inv, stav& stavHry) {
 	stavHry.nastavBunku(inv.obranca->id, -1, 0);
 }
 
-void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& normAns, vector<bool>& reseteri) {
+void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) {
 	vector<bool> zmenene;
 	for (unsigned i=0; i<stavHry.cely.size(); i++) {
 		zmenene.push_back(false);
@@ -93,15 +97,12 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 		stringstream ss(odpovede[i]);
 		string prikaz;
 		while (ss >> prikaz) {
-			if (prikaz == "reset") {
-				reseteri[i] = true;
-			}
 			if (prikaz == "invazia") {
 				invAlt inva;
 				nacitaj(ss,inva);
 				if (oprav(inva, i, stavHry)) {
 					stavHry.novaInv(inva);
-					koduj(normAns,inva);
+					koduj(pokrac,inva);
 					zmenene[inva.utocnik] = true;
 				}
 			}
@@ -109,23 +110,25 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 	}
 
 	// odsimuluj invazie, co prave dosli do ciela
-	vector<invazia*>* invy = &stavHry.invPodlaCasu[0];
-	random_shuffle(invy->begin(), invy->end());
-	for (unsigned i=0; i<invy->size(); i++) {
-		invazia* ptr = (*invy)[i];
-		vykonaj(*ptr, stavHry);
-		zmenene[ptr->obranca->id] = true;
+	if (stavHry.invPodlaCasu.size() > 0) {
+		vector<invazia*>* invy = &stavHry.invPodlaCasu[0];
+		random_shuffle(invy->begin(), invy->end());
+		for (unsigned i=0; i<invy->size(); i++) {
+			invazia* ptr = (*invy)[i];
+			vykonaj(*ptr, stavHry);
+			zmenene[ptr->obranca->id] = true;
+		}
 	}
-
+	
 	// info o zmenenych bunkach
 	for (unsigned i=0; i<zmenene.size(); i++) {
 		if (!zmenene[i]) {
 			continue;
 		}
-		koduj(normAns,stavHry.cely[i]);
+		koduj(pokrac,stavHry.cely[i]);
 	}
 
 	// casova zmena
 	stavHry.nastavCas(stavHry.cas + 1);
-	normAns << "cas " << stavHry.cas << "\n";
+	pokrac << "cas " << stavHry.cas << "\n";
 }

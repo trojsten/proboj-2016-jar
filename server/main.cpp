@@ -19,13 +19,49 @@ using namespace std;
 #define MAX_CITAJ 1024
 #define TAH_CAS 10 // v milisekundach
 
+
 vector<Klient> klienti;
+vector<unsigned> kposy;
+vector<string> kodpovede;
+
+string historia;
+
 
 // tato trapna funkcia existuje len kvoli inicializujSignaly()
 void zabiKlientov() {
 	loguj("ukoncujem klientov");
 	for (unsigned i=0; i<klienti.size(); i++) {
 		klienti[i].zabi();
+	}
+}
+
+void odpovedaj (unsigned k, stringstream& ss, string& resetAns) {
+	string riadok;
+	while (getline(ss, riadok)) {
+		if (riadok == "changeDesc") {
+			string ans = historia.substr(kposy[k], historia.size());
+			klienti[k].posli(ans + "end\n");
+			kposy[k] = historia.size();
+		}
+		else
+		if (riadok == "stateDesc") {
+			klienti[k].posli(resetAns + "end\n");
+			kposy[k] = historia.size();
+		}
+		else
+		if (riadok == "desc") {
+			string ans = historia.substr(kposy[k], historia.size());
+			if (ans.size() < resetAns.size()) {
+				klienti[k].posli(ans + "end\n");
+			}
+			else {
+				klienti[k].posli(resetAns + "end\n");
+			}
+			kposy[k] = historia.size();
+		}
+		else {
+			kodpovede[k] += riadok + "\n";
+		}
 	}
 }
 
@@ -72,49 +108,54 @@ int main(int argc, char *argv[]) {
 		uzMena.insert(meno);
 		klienti.push_back(Klient(meno, klientAdr, zaznAdr));
 		klienti[i-3].restartuj();
+		klienti[i-3].posli("hrac " + itos(i-3) + "\n");
+		
+		kposy.push_back(0);
+		kodpovede.push_back("");
 	}
-	
+
+	// nacita mapu
 	stav stavHry;
 	string mapAdr(argv[2]);
 	nacitajMapu(mapAdr, stavHry, klienti.size());
-	koduj(observationstream, stavAlt(stavHry));
+
+	// zakoduje pociatocny stav a posle ho
+	stringstream pocStav;
+	koduj(pocStav, stavAlt(stavHry));
+	observationstream << pocStav.str();
+	for (unsigned k=0; k<klienti.size(); k++) {
+		klienti[k].posli(pocStav.str());
+	}
 
 	long long ltime = gettime();
 
 	while (stavHry.vyherca() == -1) {
-		vector<string> odpovede;
-		vector<bool> reseteri;
-		for (unsigned k=0; k<klienti.size(); k++) {
-			odpovede.push_back("");
-			reseteri.push_back(false);
-			if (!klienti[k].zije()) {
-				klienti[k].restartuj();
-				continue;
-			}
-			odpovede[k] = klienti[k].citaj(MAX_CITAJ);
+		string resetAns;
+		{
+			stringstream temp;
+			koduj(temp, stavAlt(stavHry));
+			resetAns = temp.str();
 		}
-		stringstream normAns, resetAns;
-		odsimulujKolo(stavHry, odpovede, normAns, reseteri);
-		koduj(resetAns, stavAlt(stavHry));
-		for (unsigned k=0; k<klienti.size(); k++) {
-			if (reseteri[k]) {
-				klienti[k].posli(resetAns.str());
+		while (gettime() - ltime < TAH_CAS) {
+			for (unsigned k=0; k<klienti.size(); k++) {
+				if (!klienti[k].zije()) {
+					klienti[k].restartuj();
+					continue;
+				}
+				stringstream riadky(klienti[k].citaj(MAX_CITAJ));
+				odpovedaj(k, riadky, resetAns);
 			}
-			else {
-				klienti[k].posli(normAns.str());
-			}
-		}
-		observationstream << normAns.str() << flush; // treba flushnut kvoli usleep... preco? neviem
-		
-		long long delay = ltime + TAH_CAS - gettime();
-		if (delay < 0) {
-			delay = 0;
-		}
-		if (usleep(delay*1000)!=0) {
-			fprintf(stderr, "main/hlavny_cyklus/usleep: %s\n", strerror(errno));
-			exit(EXIT_FAILURE);
 		}
 		ltime = gettime();
+		
+		stringstream pokracovanieHistorie;
+		odsimulujKolo(stavHry, kodpovede, pokracovanieHistorie);
+		for (unsigned k=0; k<klienti.size(); k++) {
+			kodpovede[k].clear();
+		}
+		historia += pokracovanieHistorie.str();
+
+		observationstream << pokracovanieHistorie.str() << "end\n" << flush;
 	}
 
   observationstream.close();
