@@ -1,7 +1,13 @@
 import java.util.*;
+import java.math.*;
 import java.io.*;
 import common.*;
 import struct.*;
+
+import java.nio.file.*;
+
+import java.awt.*;
+import javax.swing.*;
 
 class Pair {
 	int first;
@@ -93,7 +99,7 @@ class InvHistory {
 			sc.next(); // zbav sa dekoratora "invAlt"
 			InvAlt inva = new InvAlt();
 			inva.nacitaj(sc);
-			S.novaInv(inva);
+			S.nastavInv(inva);
 			// sc.close();
 		}
 	}
@@ -154,7 +160,6 @@ class CheckHistory {
 		S.cas = novy.cas;
 		S.cely = novy.cely;
 		S.vlastnim = novy.vlastnim;
-		S.invPodlaHrany = novy.invPodlaHrany;
 		S.invPodlaCasu = novy.invPodlaCasu;
 		// sc.close();
 	}
@@ -162,7 +167,8 @@ class CheckHistory {
 
 class ObStav {
 	int hrac;
-	Stav S;
+	long delay; // kolko trva 1 frame ms
+	final Stav S;
 	RStream historia;
 
 	CellHistory celh;
@@ -174,6 +180,7 @@ class ObStav {
 
 	ObStav () {
 		hrac = -1;
+		delay = 10;
 		S = new Stav();
 		historia = new RStream();
 		celh = new CellHistory();
@@ -197,6 +204,7 @@ class ObStav {
 			if (hrac == -1) {
 				if (prikaz.equals("hrac")) {
 					hrac = Integer.parseInt(riad.next());
+					delay = 0;
 					continue;
 				}
 				if (prikaz.equals("bunka")) {
@@ -250,30 +258,142 @@ class ObStav {
 	}
 }
 
+class Klient {
+	Color cl;
+	String name;
+
+	Klient () {
+		cl = Color.GRAY;
+		name = "Anonymus";
+	}
+	Klient (String str, Color farba) {
+		name = str;
+		cl = farba;
+	}
+}
+
+class Visual extends JComponent {
+	Stav S;
+	ArrayList<Klient> klienti;
+
+	public Visual (Stav vzor, ArrayList<Klient> kvzor) {
+		S = vzor;
+		klienti = kvzor;
+		setPreferredSize(new Dimension(1000,700));
+	}
+
+	public void paintComponent (Graphics g) {
+		// background
+		g.setColor(Color.BLACK);
+		g.fillRect(0,0,getWidth(),getHeight());
+
+		// bunky
+		if (S.cely != null) {
+			for (int i=0; i<S.cely.size(); i++) {
+				int vlastnik = S.cely.get(i).vlastnik;
+				Color fillcl = Color.GRAY;
+				if (vlastnik >= 0) {
+					fillcl = klienti.get(vlastnik).cl;
+				}
+				
+				int x = S.cely.get(i).pozicia.x;
+				int y = S.cely.get(i).pozicia.y;
+				int maxr = (int) Math.sqrt(25 + S.cely.get(i).kapacita) + 1;
+				int r = (int) Math.sqrt(25 + S.cely.get(i).zistiPop());
+				
+				g.setColor(Color.RED);
+				g.drawOval(x-maxr, y-maxr, 2*maxr, 2*maxr);
+				g.setColor(fillcl);
+				g.fillOval(x-r, y-r, 2*r, 2*r);
+			}
+		}
+
+		// invazie
+		if (S.invPodlaCasu != null) {
+			for (int i=0; i<S.invPodlaCasu.size(); i++) {
+				ArrayList<Invazia> invy = S.invPodlaCasu.get(i);
+				for (int j=0; j<invy.size(); j++) {
+					Invazia inv = invy.get(j);
+
+					int vlastnik = inv.vlastnik;
+					Color fillcl = Color.GRAY;
+					if (vlastnik >= 0) {
+						fillcl = klienti.get(vlastnik).cl;
+					}
+					
+					Bod povod = inv.od.pozicia;
+					Bod ciel = inv.kam.pozicia;
+					double uz = (S.cas - inv.odchod)/(double)(inv.prichod - inv.odchod);
+					Bod kde = povod.plus(ciel.minus(povod).krat(uz));
+
+					int x = kde.x;
+					int y = kde.y;
+					int r = (int) Math.sqrt(inv.jednotiek);
+
+					g.setColor(fillcl);
+					g.fillOval(x-r, y-r, 2*r, 2*r);
+				}
+			}
+		}
+		
+	}
+}
+
 public class Observer {
 	public static void main (String args[]) throws IOException {
+		// nacitaj stream a metadata
+		Scanner sc = null;
+		Scanner msc = null;
+		if (args.length == 0) {
+			sc = new Scanner(System.in);
+			Path kde = Paths.get(Observer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			kde = kde.resolve("meta");
+			msc = new Scanner(kde);
+		}
+		else {
+			Path dir = Paths.get("").resolve(args[0]);
+			Path obsubor = dir.resolve("observation");
+			Path metasubor = dir.resolve("meta");
+			sc = new Scanner(obsubor);
+		}
+		ArrayList<Klient> klienti = new ArrayList<Klient>();
+		while (msc.hasNext()) {
+			String meno = msc.next();
+			float r = Float.parseFloat(msc.next());
+			float g = Float.parseFloat(msc.next());
+			float b = Float.parseFloat(msc.next());
+			float a = Float.parseFloat(msc.next());
+			klienti.add(new Klient(meno, new Color(r,g,b,a)) );
+		}
+
+
+		// inicializuj GUI
 		ObStav obs = new ObStav();
-		Scanner sc = new Scanner(System.in);
-		long casSkoncenia = -1;
-		while (sc.hasNext() || obs.historia.hasNext() || (new Date().getTime() - casSkoncenia < 2000)) {
+		Visual vis = new Visual(obs.S, klienti);
+		JFrame mainFrame = new JFrame("Observer");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.add(vis);
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+		
+
+		// hlavny cyklus
+		while (sc.hasNext() || obs.historia.hasNext() || mainFrame.isVisible()) {
 			if (sc.hasNext()) {
 				while (!obs.ulozStav(sc)) {
-					// akcie pre hraca-cloveka
+					System.out.format("changeDesc\n");
 				}
 				System.out.format("changeDesc\n");
 			}
+			long olddate = new Date().getTime();
 			while (obs.advanceTime()) {
-				// bez hraca-cloveka
-			}
-
-			// aby to na konci hned neskapalo
-			if (obs.historia.hasNext()) {
-				casSkoncenia = -1;
-			}
-			else
-			if (!sc.hasNext() && !obs.historia.hasNext() && casSkoncenia == -1) {
-				casSkoncenia = new Date().getTime();
+				mainFrame.repaint();
+				while (new Date().getTime() - olddate < obs.delay) {
+					
+				}
+				olddate = new Date().getTime();
 			}
 		}
+		
 	}
 }

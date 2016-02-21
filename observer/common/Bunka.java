@@ -47,7 +47,7 @@ public class Bunka
 			poslCas = Common.velkyCas;
 			return populacia;
 		}
-		populacia += (poslCas - Common.velkyCas)*rast;
+		populacia += (Common.velkyCas - poslCas)*rast;
 		if (populacia > kapacita) {
 			populacia = kapacita;
 		}

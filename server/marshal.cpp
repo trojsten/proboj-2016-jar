@@ -29,10 +29,12 @@ template<> void nacitaj<int> (istream& buf, int& out) {
 #undef member
 #undef end
 
-void dekodujStav (istream& buf, stav& out) {
+bool dekodujStav (istream& buf, stav& out) {
 	string prikaz;
 	buf >> prikaz;
+	bool asponJeden = false;
 	while (!(prikaz == "end")) {
+		asponJeden = true;
 		if (prikaz == "bunka") {
 			bunka cel;
 			nacitaj(buf,cel);
@@ -55,4 +57,5 @@ void dekodujStav (istream& buf, stav& out) {
 		}
 		buf >> prikaz;
 	}
+	return asponJeden;
 }

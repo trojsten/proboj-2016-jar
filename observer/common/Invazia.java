@@ -5,28 +5,34 @@ import common.InvAlt;
 
 public class Invazia
 {
+	public int odchod;
 	public int prichod;
-	public Bunka utocnik; // v skutocnosti pointery
-	public Bunka obranca;
+	public int vlastnik;
+	public Bunka od; // v skutocnosti pointery
+	public Bunka kam;
 	public int jednotiek;
 
 	public Invazia () {
-		prichod = 0;
-		utocnik = new Bunka();
-		obranca = new Bunka();
-		jednotiek = 0;
+		odchod = -1;
+		prichod = -1;
+		vlastnik = -1;
+		od = new Bunka();
+		kam = new Bunka();
+		jednotiek = -1;
 	}
-	public Invazia (int _prichod, Bunka _utocnik, Bunka _obranca, int _jednotiek) {
+	public Invazia (int _odchod, int _prichod, int _vlastnik, Bunka _od, Bunka _kam, int _jednotiek) {
+		odchod = _odchod;
 		prichod = _prichod;
-		utocnik = _utocnik;
-		obranca = _obranca;
+		vlastnik = _vlastnik;
+		od = _od;
+		kam = _kam;
 		jednotiek = _jednotiek;
 	}
 
 	public int atk () {
-		return jednotiek*utocnik.utok;
+		return jednotiek * od.utok;
 	}
 	public int def () {
-		return obranca.def();
+		return kam.def();
 	}
 }

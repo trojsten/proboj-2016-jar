@@ -20,14 +20,12 @@ public class Stav
 	public int cas;
 	public ArrayList<Bunka> cely;
 	public ArrayList<TreeSet<Bunka> > vlastnim;
-	public ArrayList<ArrayList<RADeque<Invazia> > > invPodlaHrany;
 	public RADeque<ArrayList<Invazia> > invPodlaCasu;
 
 	public Stav () {
 		cas = 0;
 		cely = new ArrayList<Bunka>();
 		vlastnim = new ArrayList<TreeSet<Bunka> >();
-		invPodlaHrany = new ArrayList<ArrayList<RADeque<Invazia> > >();
 		invPodlaCasu = new RADeque<ArrayList<Invazia> >();
 	}
 	public Stav (StavAlt S) {
@@ -59,9 +57,17 @@ public class Stav
 	}
 	public void nastavBunku (int id, int vlastnik, int populacia) {
 		int old = cely.get(id).vlastnik;
-		vlastnim.get(old).remove(cely.get(id));
+		if (old >= 0) {
+			vlastnim.get(old).remove(cely.get(id));
+		}
 		cely.get(id).vlastnik = vlastnik;
-		vlastnim.get(vlastnik).add(cely.get(id));
+		if (vlastnik >= 0) {
+			while (vlastnim.size() <= vlastnik) {
+				TreeSet<Bunka> ts = new TreeSet<Bunka>(new CompBunka());
+				vlastnim.add(ts);
+			}
+			vlastnim.get(vlastnik).add(cely.get(id));
+		}
 
 		cely.get(id).populacia = populacia;
 		cely.get(id).poslCas = Common.velkyCas;
@@ -69,32 +75,33 @@ public class Stav
 	public void nastavCas (int t) {
 		int diff = t - cas;
 		for (int i=0; i<diff && !invPodlaCasu.isEmpty(); i++) {
-			ArrayList<Invazia> invy = invPodlaCasu.get(0);
-			for (int j=0; j<invy.size(); j++) {
-				Invazia inv = invy.get(j);
-				int od = inv.utocnik.id;
-				int kam = inv.obranca.id;
-				invPodlaHrany.get(od).get(kam).pop_front();
-			}
 			invPodlaCasu.pop_front();
 		}
 		cas = t;
 		Common.velkyCas = t;
 	}
-	public void novaInv (int prichod, int utocnik, int obranca, int jednotiek) {
+	
+	public void nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) {
+		// natvrdo nastavi invaziu, dobre ked sa udiala/udeje nie v tomto okamihu
 		int diff = prichod - cas;
 		while (invPodlaCasu.size() <= diff) {
 			ArrayList<Invazia> novy = new ArrayList<Invazia>();
 			invPodlaCasu.push_back(novy);
 		}
-		Bunka utk = cely.get(utocnik);
-		Bunka obr = cely.get(obranca);
-		Invazia inv = new Invazia(prichod,utk,obr,jednotiek);
+		Bunka utk = cely.get(od);
+		Bunka obr = cely.get(kam);
+		Invazia inv = new Invazia(odchod, prichod, vlastnik, utk, obr, jednotiek);
 		invPodlaCasu.get(diff).add(inv);
-		invPodlaHrany.get(utocnik).get(obranca).push_back(inv);
+	}
+	public void nastavInv (InvAlt inva) {
+		nastavInv(inva.odchod, inva.prichod, inva.vlastnik, inva.od, inva.kam, inva.jednotiek);
+	}
+	public void novaInv (int prichod, int od, int kam, int jednotiek) {
+		// rata s tym, ze ma aktualne data a ze invazia vznika v TOMTO OKAMIHU
+		nastavInv(cas, prichod, cely.get(od).vlastnik, od, kam, jednotiek);
 	}
 	public void novaInv (InvAlt inva) {
-		novaInv(inva.prichod, inva.utocnik, inva.obranca, inva.jednotiek);
+		novaInv(inva.prichod, inva.od, inva.kam, inva.jednotiek);
 	}
 
 	public int vyherca () {
@@ -136,7 +143,6 @@ public class Stav
 				cas = novy.cas;
 				cely = novy.cely;
 				vlastnim = novy.vlastnim;
-				invPodlaHrany = novy.invPodlaHrany;
 				invPodlaCasu = novy.invPodlaCasu;
 			}
 			if (prikaz.equals("cas")) {

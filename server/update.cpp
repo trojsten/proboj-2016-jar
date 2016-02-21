@@ -11,41 +11,45 @@ using namespace std;
 
 
 bool oprav (invAlt& inva, int hrac, stav& stavHry) {
-	if (inva.utocnik<0 || inva.utocnik>=(int)stavHry.cely.size()) {
+	if (inva.od<0 || inva.od>=(int)stavHry.cely.size()) {
 		return false;
 	}
-	if (inva.obranca<0 || inva.obranca>=(int)stavHry.cely.size()) {
+	if (inva.kam<0 || inva.kam>=(int)stavHry.cely.size()) {
 		return false;
 	}
-	if (inva.utocnik == inva.obranca) {
+	if (inva.od == inva.kam) {
 		return false;
 	}
-	if (stavHry.cely[inva.utocnik].vlastnik != hrac) {
+	if (stavHry.cely[inva.od].vlastnik != hrac) {
 		return false;
 	}
 	if (inva.jednotiek < 0) {
 		return false;
 	}
-	int popcap = stavHry.cely[inva.utocnik].zistiPop();
-	if (inva.jednotiek > stavHry.cely[inva.utocnik].zistiPop()) {
+	int popcap = stavHry.cely[inva.od].zistiPop();
+	if (inva.jednotiek > stavHry.cely[inva.od].zistiPop()) {
 		inva.jednotiek = popcap;
 	}
-	stavHry.nastavBunku(inva.utocnik, (inva.jednotiek == popcap ? -1 : hrac), popcap - inva.jednotiek);
+	stavHry.nastavBunku(inva.od, (inva.jednotiek == popcap ? -1 : hrac), popcap - inva.jednotiek);
 	
-	bod smer = stavHry.cely[inva.utocnik].pozicia - stavHry.cely[inva.obranca].pozicia;
-	int prichod = stavHry.cas + int(ceil(smer.dist()) );
-	inva.prichod = prichod;
+	bod smer = stavHry.cely[inva.kam].pozicia - stavHry.cely[inva.od].pozicia;
+	inva.prichod = stavHry.cas + int(ceil(smer.dist()) );
+	
+	/* // toto v skutocnosti netreba opravovat --- stav si to sam urci
+	inva.odchod = stavHry.cas;
+	inva.vlastnik = hrac;
+	*/
 	
 	return true;
 }
 
 void vykonaj (invazia inv, stav& stavHry) {
-	int kto[2] = {inv.utocnik->vlastnik, inv.obranca->vlastnik};
+	int kto[2] = {inv.vlastnik, inv.kam->vlastnik};
 	if (kto[0] == kto[1]) {
-		stavHry.nastavBunku(inv.obranca->id, kto[0], inv.obranca->zistiPop() + inv.jednotiek);
+		stavHry.nastavBunku(inv.kam->id, kto[0], inv.kam->zistiPop() + inv.jednotiek);
 		return;
 	}
-	int povjedn[2] = {inv.jednotiek, inv.obranca->zistiPop()};
+	int povjedn[2] = {inv.jednotiek, inv.kam->zistiPop()};
 	int povpow[2] = {inv.atk(), inv.def()};
 	int pow[2];
 	for (int i=0; i<2; i++) {
@@ -80,10 +84,10 @@ void vykonaj (invazia inv, stav& stavHry) {
 		if (zost[i]==0) {
 			continue;
 		}
-		stavHry.nastavBunku(inv.obranca->id, kto[i], zost[i]);
+		stavHry.nastavBunku(inv.kam->id, kto[i], zost[i]);
 		return ;
 	}
-	stavHry.nastavBunku(inv.obranca->id, -1, 0);
+	stavHry.nastavBunku(inv.kam->id, -1, 0);
 }
 
 void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) {
@@ -91,7 +95,7 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 	for (unsigned i=0; i<stavHry.cely.size(); i++) {
 		zmenene.push_back(false);
 	}
-
+	
 	// spracuj nove prikazy
 	for (unsigned i=0; i<odpovede.size(); i++) {
 		stringstream ss(odpovede[i]);
@@ -103,12 +107,12 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 				if (oprav(inva, i, stavHry)) {
 					stavHry.novaInv(inva);
 					koduj(pokrac,inva);
-					zmenene[inva.utocnik] = true;
+					zmenene[inva.od] = true;
 				}
 			}
 		}
 	}
-
+	
 	// odsimuluj invazie, co prave dosli do ciela
 	if (stavHry.invPodlaCasu.size() > 0) {
 		vector<invazia*>* invy = &stavHry.invPodlaCasu[0];
@@ -116,7 +120,7 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 		for (unsigned i=0; i<invy->size(); i++) {
 			invazia* ptr = (*invy)[i];
 			vykonaj(*ptr, stavHry);
-			zmenene[ptr->obranca->id] = true;
+			zmenene[ptr->kam->id] = true;
 		}
 	}
 	
@@ -127,7 +131,7 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 		}
 		koduj(pokrac,stavHry.cely[i]);
 	}
-
+	
 	// casova zmena
 	stavHry.nastavCas(stavHry.cas + 1);
 	pokrac << "cas " << stavHry.cas << "\n";

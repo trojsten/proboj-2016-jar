@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -93,25 +94,46 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	set<string> uzMena;
-	for (int i=3; i<argc; i++) {
-		string klientAdr(argv[i]);
-		// meno klienta je cast za poslednym /, za ktorym nieco je
-		int j = (int)klientAdr.size() - 1;
-		while (j>0 && klientAdr[j-1]!='/') {
-			j--;
-		}
-		string meno = klientAdr.substr(j);
-		while (uzMena.count(meno)) {
-			meno += "+";
-		}
-		uzMena.insert(meno);
-		klienti.push_back(Klient(meno, klientAdr, zaznAdr));
-		klienti[i-3].restartuj();
-		klienti[i-3].posli("hrac " + itos(i-3) + "\n");
+	{
+		string metasubor = zaznAdr+"/meta";
+		fstream metastream(metasubor.c_str(), fstream::out | fstream::trunc);
+		string obsmetasubor = "observer/meta";
+		fstream obsmetastream(obsmetasubor.c_str(), fstream::out | fstream::trunc);
 		
-		kposy.push_back(0);
-		kodpovede.push_back("");
+		random_shuffle(argv + 3, argv + argc);
+		set<string> uzMena;
+		
+		for (int i=3; i<argc; i++) {
+			string klientAdr(argv[i]);
+			// meno klienta je cast za poslednym /, za ktorym nieco je
+			int j = (int)klientAdr.size() - 1;
+			while (j>0 && klientAdr[j-1]!='/') {
+				j--;
+			}
+			string meno = klientAdr.substr(j);
+			while (uzMena.count(meno)) {
+				meno += "+";
+			}
+			uzMena.insert(meno);
+			klienti.push_back(Klient(meno, klientAdr, zaznAdr));			
+			kposy.push_back(0);
+			kodpovede.push_back("");
+			
+			string clsubor = klientAdr + "/color";
+			fstream clstream(clsubor.c_str(), fstream::in);
+			string riadok;
+			getline(clstream, riadok);
+			clstream.close();
+			metastream << meno << " " << riadok << "\n";
+			obsmetastream << meno << " " << riadok << "\n";
+		}
+		metastream.close();
+		obsmetastream.close();
+		
+		for (unsigned k=0; k<klienti.size(); k++) {
+			klienti[k].restartuj();
+			klienti[k].posli("hrac " + itos(k) + "\n");
+		}
 	}
 
 	// nacita mapu
@@ -122,9 +144,9 @@ int main(int argc, char *argv[]) {
 	// zakoduje pociatocny stav a posle ho
 	stringstream pocStav;
 	koduj(pocStav, stavAlt(stavHry));
-	observationstream << pocStav.str();
+	observationstream << pocStav.str() << "end\n";
 	for (unsigned k=0; k<klienti.size(); k++) {
-		klienti[k].posli(pocStav.str());
+		klienti[k].posli(pocStav.str() + "end\n");
 	}
 
 	long long ltime = gettime();
@@ -151,6 +173,7 @@ int main(int argc, char *argv[]) {
 		stringstream pokracovanieHistorie;
 		odsimulujKolo(stavHry, kodpovede, pokracovanieHistorie);
 		for (unsigned k=0; k<klienti.size(); k++) {
+			//cerr << k << " povedal: " << kodpovede[k] << "\n";
 			kodpovede[k].clear();
 		}
 		historia += pokracovanieHistorie.str();
@@ -159,6 +182,7 @@ int main(int argc, char *argv[]) {
 	}
 
   observationstream.close();
+	zabiKlientov();
 
   return 0;
 }

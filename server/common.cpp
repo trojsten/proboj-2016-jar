@@ -1,4 +1,5 @@
 #include <math.h>
+#include <iostream>
 
 using namespace std;
 
@@ -63,32 +64,25 @@ int bunka::def () {
 
 invazia::invazia () {}
 
-invazia::invazia (int _prichod, bunka* _utocnik, bunka* _obranca, int _jednotiek)
-	: prichod(_prichod), utocnik(_utocnik), obranca(_obranca), jednotiek(_jednotiek) {}
+invazia::invazia (int _odchod, int _prichod, int _vlastnik, bunka* _od, bunka* _kam, int _jednotiek)
+	: odchod(_odchod), prichod(_prichod), vlastnik(_vlastnik), od(_od), kam(_kam), jednotiek(_jednotiek) {}
 
 int invazia::atk () {
-	return jednotiek * utocnik->utok;
+	return jednotiek * od->utok;
 }
 
 int invazia::def () {
-	return obranca->def();
+	return kam->def();
 }
 
 
 invAlt::invAlt () {}
 
-invAlt::invAlt (int _prichod, int _utocnik, int _obranca, int _jednotiek) {
-	prichod = _prichod;
-	utocnik = _utocnik;
-	obranca = _obranca;
-	jednotiek = _jednotiek;
-}
+invAlt::invAlt (int _odchod, int _prichod, int _vlastnik, int _od, int _kam, int _jednotiek)
+	: odchod(_odchod), prichod(_prichod), vlastnik(_vlastnik), od(_od), kam(_kam), jednotiek(_jednotiek) {}
 
 invAlt::invAlt (invazia inv) {
-	prichod = inv.prichod;
-	utocnik = inv.utocnik->id;
-	obranca = inv.obranca->id;
-	jednotiek = inv.jednotiek;
+	invAlt(inv.odchod, inv.prichod, inv.vlastnik, inv.od->id, inv.kam->id, inv.jednotiek);
 }
 
 
@@ -127,9 +121,16 @@ void stav::urciVlastnictvo () {
 
 void stav::nastavBunku (int id, int vlastnik, int populacia) {
 	int old = cely[id].vlastnik;
-	vlastnim[old].erase(&cely[id]);
+	if (old >= 0) {
+		vlastnim[old].erase(&cely[id]);
+	}
 	cely[id].vlastnik = vlastnik;
-	vlastnim[vlastnik].insert(&cely[id]);
+	if (vlastnik >= 0) {
+		while ((int)vlastnim.size() <= vlastnik) {
+			vlastnim.push_back(set<bunka*, compBunkaPtr>());
+		}
+		vlastnim[vlastnik].insert(&cely[id]);
+	}
 	
 	cely[id].populacia = populacia;
 	cely[id].poslCas = velkyCas;
@@ -140,9 +141,6 @@ void stav::nastavCas (int t) {
 	for (int i=0; i<diff && !invPodlaCasu.empty(); i++) {
 		for (unsigned j=0; j<invPodlaCasu[0].size(); j++) {
 			invazia* ptr = invPodlaCasu[0][j];
-			int od = ptr->utocnik->id;
-			int kam = ptr->obranca->id;
-			invPodlaHrany[od][kam].pop_front();
 			delete ptr;
 		}
 		invPodlaCasu.pop_front();
@@ -151,19 +149,18 @@ void stav::nastavCas (int t) {
 	velkyCas = t;
 }
 
-void stav::novaInv (int prichod, int utocnik, int obranca, int jednotiek) {
+void stav::novaInv (int prichod, int od, int kam, int jednotiek) {
 	int diff = prichod - cas;
 	while ((int)invPodlaCasu.size() <= diff) {
 		invPodlaCasu.push_back(vector<invazia*>(0));
 	}
 	invazia* ptr = new invazia;
-	*ptr = invazia(prichod, &cely[utocnik], &cely[obranca], jednotiek);
+	*ptr = invazia(cas, prichod, cely[od].vlastnik, &cely[od], &cely[kam], jednotiek);
 	invPodlaCasu[diff].push_back(ptr);
-	invPodlaHrany[utocnik][obranca].push_back(ptr);
 }
 
-void stav::novaInv (invAlt inv) {
-	novaInv(inv.prichod, inv.utocnik, inv.obranca, inv.jednotiek);
+void stav::novaInv (invAlt inva) {
+	novaInv(inva.prichod, inva.od, inva.kam, inva.jednotiek);
 }
 
 int stav::vyherca () { // -1 == hra este bezi, -2 == nikto

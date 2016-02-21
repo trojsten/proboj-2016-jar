@@ -52,13 +52,15 @@ struct bunka {
 };
 
 struct invazia {
+	int odchod;
 	int prichod;
-	bunka* utocnik;
-	bunka* obranca;
+	int vlastnik;
+	bunka* od;
+	bunka* kam;
 	int jednotiek;
 
 	invazia () ;
-	invazia (int _prichod, bunka* _utocnik, bunka* _obranca, int _jednotiek) ;
+	invazia (int _odchod, int _prichod, int _vlastnik, bunka* _od, bunka* _kam, int _jednotiek) ;
 	
 	int atk () ; // celkova utocna sila invazie
 	int def () ; // celkova obranna sila obrancu
@@ -67,10 +69,10 @@ struct invazia {
 };
 
 struct invAlt { // pouzivane len pri komunikacii
-	int prichod, utocnik, obranca, jednotiek;
+	int odchod, prichod, vlastnik, od, kam, jednotiek;
 
 	invAlt () ;
-	invAlt (int _prichod, int _utocnik, int _obranca, int _jednotiek) ;
+	invAlt (int _odchod, int _prichod, int _vlastnik, int _od, int _kam, int _jednotiek) ;
 	invAlt (invazia inv) ;
 
 	static string nazovtyp () ;
@@ -84,7 +86,6 @@ struct stav {
 	int cas;
 	vector<bunka> cely; // zoznam vsetkych buniek
 	vector<set<bunka*, compBunkaPtr> > vlastnim; // zoznam pointrov na bunky podla majitela
-	vector<vector<deque<invazia*> > > invPodlaHrany;
 	deque<vector<invazia*> > invPodlaCasu;
 
 	stav () ;
@@ -93,7 +94,7 @@ struct stav {
 	void urciVlastnictvo () ;
 	void nastavBunku (int id, int vlastnik, int populacia) ;
 	void nastavCas (int t) ;
-	void novaInv (int prichod, int utocnik, int obranca, int jednotiek) ;
+	void novaInv (int prichod, int utocnik, int obranca, int jednotiek) ; // rata s tym, ze ma aktualne data a ze invazia vznika v TOMTO OKAMIHU
 	void novaInv (invAlt inv) ;
 
 	int vyherca () ;
@@ -137,9 +138,11 @@ reflection(bunka);
 end();
 
 reflection(invAlt);
+	member(odchod);
 	member(prichod);
-	member(utocnik);
-	member(obranca);
+	member(vlastnik);
+	member(od);
+	member(kam);
 	member(jednotiek);
 end();
 

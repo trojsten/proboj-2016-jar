@@ -36,7 +36,7 @@ template<class T> void koduj (std::ostream& out, const T& in) {
 	out << "\n";
 }
 
-void dekodujStav (std::istream& in, stav& out) ;
+bool dekodujStav (std::istream& in, stav& out) ;
 
 #endif
 

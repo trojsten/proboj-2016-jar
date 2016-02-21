@@ -25,6 +25,14 @@ public class Bod
 		Bod res = new Bod(x-A.x, y-A.y);
 		return res;
 	}
+	public Bod plus (Bod A) {
+		Bod res = new Bod(x+A.x, y+A.y);
+		return res;
+	}
+	public Bod krat (double q) {
+		Bod res = new Bod((int)(q*x), (int)(q*y));
+		return res;
+	}
 	public double dist () {
 		return Math.sqrt(x*x + y*y);
 	}
