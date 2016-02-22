@@ -353,8 +353,9 @@ public class Observer {
 		else {
 			Path dir = Paths.get("").resolve(args[0]);
 			Path obsubor = dir.resolve("observation");
-			Path metasubor = dir.resolve("meta");
 			sc = new Scanner(obsubor);
+			Path metasubor = dir.resolve("meta");
+			msc = new Scanner(metasubor);
 		}
 		ArrayList<Klient> klienti = new ArrayList<Klient>();
 		while (msc.hasNext()) {
