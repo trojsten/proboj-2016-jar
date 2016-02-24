@@ -1,6 +1,7 @@
 
 using namespace std;
 
+#include <vector>
 #include <sstream>
 #include <algorithm>
 #include <math.h>
@@ -9,6 +10,95 @@ using namespace std;
 #include "update.h"
 #include "marshal.h"
 
+// cast 1 --- uchovavanie si info o hre pre rychly retrieval a rychle rozhodovanie, ci hra uz skoncila
+// a pomocne funkcie, existencia tohto je sposobena tym, ze nechceme clutterovat common vecami iba
+// pre server --- ten obsahuje veci vyuzivane aj klientom
+
+struct staty {
+	int cas;
+	int zostHracov;
+	vector<int> casUmrtia; // v [t,t+1) umrel
+	vector<int> pocZivych;
+
+	void add (int vlastnik, int val) {
+		if (vlastnik<0 || vlastnik>=(int)pocZivych.size()) {
+			return;
+		}
+		pocZivych[vlastnik] += val;
+		if (pocZivych[vlastnik] == 0) {
+			casUmrtia[vlastnik] = cas;
+			zostHracov--;
+		}
+		else
+		if (pocZivych[vlastnik] == val) {
+			casUmrtia[vlastnik] = -1;
+			zostHracov++;
+		}
+	}
+
+	staty () {}
+	staty (unsigned pocHrac, stav& stavHry) {
+		cas = 0;
+		zostHracov = 0;
+		for (unsigned i=0; i<pocHrac; i++) {
+			casUmrtia.push_back(0);
+			pocZivych.push_back(0);
+		}
+		for (unsigned i=0; i<stavHry.cely.size(); i++) {
+			int vlastnik = stavHry.cely[i].vlastnik;
+			add(vlastnik, 1);
+		}
+		for (unsigned t=0; t<stavHry.invPodlaCasu.size(); t++) {
+			for (unsigned i=0; i<stavHry.invPodlaCasu[t].size(); i++) {
+				add(stavHry.invPodlaCasu[t][i]->vlastnik, 1);
+			}
+		}
+	}
+
+	bool koniec () {
+		/*
+		for (unsigned i=0; i<pocZivych.size(); i++) {
+			cout << pocZivych[i] << "," << pocInv[i] << "  ";
+		}
+		cout << "\n";
+		*/
+		return (zostHracov <= 1);
+	}
+};
+
+staty stats;
+
+void inicializujStaty (unsigned pocHrac,stav& stavHry) {
+	stats = staty(pocHrac,stavHry);
+}
+
+void nastavBunku (int id, int vlastnik, int populacia, stav& stavHry) {
+	if (populacia == 0) {
+		vlastnik = -1;
+	}
+	stats.add(stavHry.cely[id].vlastnik, -1);
+	stavHry.nastavBunku(id, vlastnik, populacia);
+	stats.add(vlastnik, 1);
+}
+
+void novaInv (invAlt inva, stav& stavHry) {
+	stats.add(inva.vlastnik, 1);
+	stavHry.nastavInv(inva);
+}
+
+void advanceCas (stav& stavHry) {
+	if (stavHry.invPodlaCasu.size() > 0) {
+		for (unsigned i=0; i<stavHry.invPodlaCasu[0].size(); i++) {
+			stats.add(stavHry.invPodlaCasu[0][i]->vlastnik, -1);
+		}
+	}
+	stats.cas++;
+	stavHry.nastavCas(stavHry.cas + 1);
+}
+
+/////////////////////////////////////////////////////////////////////
+// cast 2 --- simulovanie hry ///////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	if (inva.od<0 || inva.od>=(int)stavHry.cely.size()) {
@@ -23,30 +113,26 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	if (stavHry.cely[inva.od].vlastnik != hrac) {
 		return false;
 	}
-	if (inva.jednotiek < 0) {
-		return false;
-	}
+	
 	int popcap = stavHry.cely[inva.od].zistiPop();
-	if (inva.jednotiek > stavHry.cely[inva.od].zistiPop()) {
+	if (inva.jednotiek > popcap) {
 		inva.jednotiek = popcap;
 	}
-	stavHry.nastavBunku(inva.od, (inva.jednotiek == popcap ? -1 : hrac), popcap - inva.jednotiek);
+	if (inva.jednotiek <= 0) {
+		return false;
+	}
 	
 	bod smer = stavHry.cely[inva.kam].pozicia - stavHry.cely[inva.od].pozicia;
 	inva.prichod = stavHry.cas + int(ceil(smer.dist()) );
-	
-	/* // toto v skutocnosti netreba opravovat --- stav si to sam urci
 	inva.odchod = stavHry.cas;
 	inva.vlastnik = hrac;
-	*/
-	
 	return true;
 }
 
 void vykonaj (invazia inv, stav& stavHry) {
 	int kto[2] = {inv.vlastnik, inv.kam->vlastnik};
 	if (kto[0] == kto[1]) {
-		stavHry.nastavBunku(inv.kam->id, kto[0], inv.kam->zistiPop() + inv.jednotiek);
+		nastavBunku(inv.kam->id, kto[0], inv.kam->zistiPop() + inv.jednotiek, stavHry);
 		return;
 	}
 	int povjedn[2] = {inv.jednotiek, inv.kam->zistiPop()};
@@ -84,13 +170,13 @@ void vykonaj (invazia inv, stav& stavHry) {
 		if (zost[i]==0) {
 			continue;
 		}
-		stavHry.nastavBunku(inv.kam->id, kto[i], zost[i]);
+		nastavBunku(inv.kam->id, kto[i], zost[i], stavHry);
 		return ;
 	}
-	stavHry.nastavBunku(inv.kam->id, -1, 0);
+	nastavBunku(inv.kam->id, -1, 0, stavHry);
 }
 
-void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) {
+bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) {
 	vector<bool> zmenene;
 	for (unsigned i=0; i<stavHry.cely.size(); i++) {
 		zmenene.push_back(false);
@@ -105,7 +191,12 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 				invAlt inva;
 				nacitaj(ss,inva);
 				if (oprav(inva, i, stavHry)) {
-					stavHry.novaInv(inva);
+					novaInv(inva,stavHry);
+					{
+						int vlastnikOd = stavHry.cely[inva.od].vlastnik;
+						int npop = stavHry.cely[inva.od].zistiPop() - inva.jednotiek;
+						nastavBunku(inva.od, vlastnikOd, npop, stavHry);
+					}
 					koduj(pokrac,inva);
 					zmenene[inva.od] = true;
 				}
@@ -133,6 +224,8 @@ void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 	}
 	
 	// casova zmena
-	stavHry.nastavCas(stavHry.cas + 1);
+	advanceCas(stavHry);
 	pokrac << "cas " << stavHry.cas << "\n";
+	
+	return stats.koniec();
 }

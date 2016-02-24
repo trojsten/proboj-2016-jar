@@ -1,1 +1,0 @@
-logic.o: logic.cpp

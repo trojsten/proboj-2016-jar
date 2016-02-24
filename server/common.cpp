@@ -36,7 +36,6 @@ bod bod::operator- (const bod A) const {
 	return bod(x-A.x, y-A.y);
 }
 
-
 double bod::dist () const {
 	return sqrt((double)x*x + (double)y*y);
 }
@@ -45,7 +44,7 @@ double bod::dist () const {
 bunka::bunka () {}
 
 int bunka::zistiPop () {
-	if (vlastnik == -1) { // neobsadene bunky nerastu
+	if (vlastnik == -1) {
 		poslCas = velkyCas;
 		return populacia;
 	}
@@ -64,8 +63,8 @@ int bunka::def () {
 
 invazia::invazia () {}
 
-invazia::invazia (int _odchod, int _prichod, int _vlastnik, bunka* _od, bunka* _kam, int _jednotiek)
-	: odchod(_odchod), prichod(_prichod), vlastnik(_vlastnik), od(_od), kam(_kam), jednotiek(_jednotiek) {}
+invazia::invazia (int odch, int prich, int vlast, bunka* odkial, bunka* kamze, int jedn)
+	: odchod(odch), prichod(prich), vlastnik(vlast), od(odkial), kam(kamze), jednotiek(jedn) {}
 
 int invazia::atk () {
 	return jednotiek * od->utok;
@@ -78,17 +77,11 @@ int invazia::def () {
 
 invAlt::invAlt () {}
 
-invAlt::invAlt (int _odchod, int _prichod, int _vlastnik, int _od, int _kam, int _jednotiek)
-	: odchod(_odchod), prichod(_prichod), vlastnik(_vlastnik), od(_od), kam(_kam), jednotiek(_jednotiek) {}
+invAlt::invAlt (int odch, int prich, int vlast, int odkial, int kamze, int jedn)
+	: odchod(odch), prichod(prich), vlastnik(vlast), od(odkial), kam(kamze), jednotiek(jedn) {}
 
-invAlt::invAlt (invazia inv) {
-	invAlt(inv.odchod, inv.prichod, inv.vlastnik, inv.od->id, inv.kam->id, inv.jednotiek);
-}
-
-
-bool compBunkaPtr::operator() (const bunka* a, const bunka* b) const {
-	return a->id < b->id;
-}
+invAlt::invAlt (invazia inv)
+	: invAlt(inv.odchod, inv.prichod, inv.vlastnik, inv.od->id, inv.kam->id, inv.jednotiek) {}
 
 
 stav::stav () {
@@ -96,42 +89,17 @@ stav::stav () {
 }
 
 stav::stav (stavAlt& S) {
-	nastavCas(S.cas);
+	cas = S.cas;
 	for (unsigned i=0; i<S.cely.size(); i++) {
 		cely.push_back(S.cely[i]);
 	}
-	urciVlastnictvo();
 	for (unsigned i=0; i<S.invZoznam.size(); i++) {
-		novaInv(S.invZoznam[i]);
-	}
-}
-
-void stav::urciVlastnictvo () {
-	for (unsigned i=0; i<cely.size(); i++) {
-		int vlastnik = cely[i].vlastnik;
-		if (vlastnik < 0) {
-			continue;
-		}
-		while ((int)vlastnim.size() <= vlastnik) {
-			vlastnim.push_back(set<bunka*, compBunkaPtr>());
-		}
-		vlastnim[vlastnik].insert(&cely[i]);
+		nastavInv(S.invZoznam[i]);
 	}
 }
 
 void stav::nastavBunku (int id, int vlastnik, int populacia) {
-	int old = cely[id].vlastnik;
-	if (old >= 0) {
-		vlastnim[old].erase(&cely[id]);
-	}
 	cely[id].vlastnik = vlastnik;
-	if (vlastnik >= 0) {
-		while ((int)vlastnim.size() <= vlastnik) {
-			vlastnim.push_back(set<bunka*, compBunkaPtr>());
-		}
-		vlastnim[vlastnik].insert(&cely[id]);
-	}
-	
 	cely[id].populacia = populacia;
 	cely[id].poslCas = velkyCas;
 }
@@ -149,32 +117,16 @@ void stav::nastavCas (int t) {
 	velkyCas = t;
 }
 
-void stav::novaInv (int prichod, int od, int kam, int jednotiek) {
+void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) {
 	int diff = prichod - cas;
 	while ((int)invPodlaCasu.size() <= diff) {
-		invPodlaCasu.push_back(vector<invazia*>(0));
+		invPodlaCasu.push_back(vector<invazia*>());
 	}
-	invazia* ptr = new invazia;
-	*ptr = invazia(cas, prichod, cely[od].vlastnik, &cely[od], &cely[kam], jednotiek);
+	invazia* ptr = new invazia(odchod, prichod, vlastnik, &cely[od], &cely[kam], jednotiek);
 	invPodlaCasu[diff].push_back(ptr);
 }
-
-void stav::novaInv (invAlt inva) {
-	novaInv(inva.prichod, inva.od, inva.kam, inva.jednotiek);
-}
-
-int stav::vyherca () { // -1 == hra este bezi, -2 == nikto
-	int kto = -2;
-	for (unsigned i=0; i<vlastnim.size(); i++) {
-		if (vlastnim[i].empty()) {
-			continue;
-		}
-		if (kto != -2) {
-			return -1;
-		}
-		kto = i;
-	}
-	return kto;
+void stav::nastavInv (invAlt inva) {
+	nastavInv(inva.odchod, inva.prichod, inva.vlastnik, inva.od, inva.kam, inva.jednotiek);
 }
 
 
@@ -187,7 +139,7 @@ stavAlt::stavAlt (stav& S) {
 	}
 	for (unsigned t=0; t<S.invPodlaCasu.size(); t++) {
 		for (unsigned i=0; i<S.invPodlaCasu[t].size(); i++) {
-			invazia inv = *S.invPodlaCasu[t][i];
+			invazia inv = *(S.invPodlaCasu[t][i]);
 			invZoznam.push_back(invAlt(inv));
 		}
 	}

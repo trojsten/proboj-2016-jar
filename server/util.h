@@ -3,6 +3,7 @@
 #define UTIL_H
 
 #include <string>
+#include <sstream>
 
 void inicializujSignaly (void (*cleanupFunkcia)()) ;
 
@@ -18,6 +19,11 @@ bool jeAdresar (std::string) ;
 bool jeSubor (std::string) ;
 
 long long gettime () ;
-std::string itos (int i) ;
+
+template<class T> std::string toString (T obj) {
+	stringstream ss;
+	ss << obj;
+	return ss.str();
+}
 
 #endif

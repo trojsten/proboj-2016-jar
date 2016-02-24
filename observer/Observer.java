@@ -7,6 +7,7 @@ import struct.*;
 import java.nio.file.*;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 class Pair {
@@ -159,7 +160,6 @@ class CheckHistory {
 		Stav novy = new Stav(salt);
 		S.cas = novy.cas;
 		S.cely = novy.cely;
-		S.vlastnim = novy.vlastnim;
 		S.invPodlaCasu = novy.invPodlaCasu;
 		// sc.close();
 	}
@@ -168,6 +168,8 @@ class CheckHistory {
 class ObStav {
 	int hrac;
 	long delay; // kolko trva 1 frame ms
+	boolean endOfStream;
+	
 	final Stav S;
 	RStream historia;
 
@@ -181,6 +183,7 @@ class ObStav {
 	ObStav () {
 		hrac = -1;
 		delay = 10;
+		endOfStream = false;
 		S = new Stav();
 		historia = new RStream();
 		celh = new CellHistory();
@@ -192,44 +195,52 @@ class ObStav {
 
 	boolean ulozStav (Scanner sc) {
 		boolean asponJeden = false;
-		while (sc.hasNext()) {
-			String riadok = sc.nextLine() + "\n";
-			
-			Scanner riad = new Scanner(riadok);
-			String prikaz = riad.next();
-			if (prikaz.equals("end")) {
-				break;
+		try {
+			while (true) {
+				String riadok = sc.nextLine() + "\n";
+				
+				Scanner riad = new Scanner(riadok);
+				String prikaz = riad.next();
+
+				if (prikaz.equals("end")) {
+					break;
+				}			
+				asponJeden = true;
+				if (hrac == -1) {
+					if (prikaz.equals("hrac")) {
+						hrac = Integer.parseInt(riad.next());
+						delay = 0;
+						continue;
+					}
+					if (prikaz.equals("bunka")) {
+						Bunka cel = new Bunka();
+						cel.nacitaj(riad);
+						celh.nastav(poslCas, historia.length(), cel);
+					}
+					if (prikaz.equals("invAlt")) {
+						InvAlt inva = new InvAlt();
+						inva.nacitaj(riad);
+						invh.novaInv(poslCas, historia.length(), inva);
+					}
+					if (prikaz.equals("stavAlt")) {
+						StavAlt salt = new StavAlt();
+						salt.nacitaj(riad);
+						poslCas = salt.cas;
+						chkh.nastav(poslCas, historia.length());
+						celh.updatniPocet(salt.cely.size());
+					}
+					if (prikaz.equals("cas")) {
+						poslCas = Integer.parseInt(riad.next());
+						cash.nastav(poslCas, historia.length());
+					}
+				}
+				historia.append(riadok);
 			}
-			asponJeden = true;
-			if (hrac == -1) {
-				if (prikaz.equals("hrac")) {
-					hrac = Integer.parseInt(riad.next());
-					delay = 0;
-					continue;
-				}
-				if (prikaz.equals("bunka")) {
-					Bunka cel = new Bunka();
-					cel.nacitaj(riad);
-					celh.nastav(poslCas, historia.length(), cel);
-				}
-				if (prikaz.equals("invAlt")) {
-					InvAlt inva = new InvAlt();
-					inva.nacitaj(riad);
-					invh.novaInv(poslCas, historia.length(), inva);
-				}
-				if (prikaz.equals("stavAlt")) {
-					StavAlt salt = new StavAlt();
-					salt.nacitaj(riad);
-					poslCas = salt.cas;
-					chkh.nastav(poslCas, historia.length());
-					celh.updatniPocet(salt.cely.size());
-				}
-				if (prikaz.equals("cas")) {
-					poslCas = Integer.parseInt(riad.next());
-					cash.nastav(poslCas, historia.length());
-				}
-			}
-			historia.append(riadok);
+		}
+		catch (NoSuchElementException | IllegalStateException exc) {
+			hrac = -1;
+			delay = 10;
+			endOfStream = true;
 		}
 		return asponJeden;
 	}
@@ -272,6 +283,43 @@ class Klient {
 	}
 }
 
+class Timebar extends JComponent {
+	ObStav O;
+	int zmena;
+
+	public Timebar (ObStav vzor) {
+		O = vzor;
+		zmena = -1;
+		setPreferredSize(new Dimension(1000,20));
+
+		MouseAdapter handler = new MouseAdapter() {
+			public void mouseClicked (MouseEvent e) {
+				double part = e.getX()/(double)getWidth();
+				zmena = (int)(part * O.poslCas);
+			}
+		};
+		addMouseListener(handler);
+	}
+
+	void rewinduj () {
+		if (zmena == -1) {
+			return;
+		}
+		O.seek(zmena);
+		zmena = -1;
+	}
+	public void paintComponent (Graphics g) {
+		// background
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, getWidth(), getHeight());
+
+		// fill
+		double part = (1 + O.S.cas)/(double)(1 + O.poslCas);
+		g.setColor(Color.BLUE);
+		g.fillRect(0, 0, (int)(part * getWidth()), getHeight());
+	}
+}
+
 class Visual extends JComponent {
 	Stav S;
 	ArrayList<Klient> klienti;
@@ -279,7 +327,7 @@ class Visual extends JComponent {
 	public Visual (Stav vzor, ArrayList<Klient> kvzor) {
 		S = vzor;
 		klienti = kvzor;
-		setPreferredSize(new Dimension(1000,700));
+		setPreferredSize(new Dimension(1000,500));
 	}
 
 	public void paintComponent (Graphics g) {
@@ -335,63 +383,80 @@ class Visual extends JComponent {
 				}
 			}
 		}
-		
 	}
 }
 
 public class Observer {
 	public static void main (String args[]) throws IOException {
+		// helping hand for beginner
+		if (args.length > 0) {
+			if (args[0].equals("help")) {
+				System.out.format("zadaj mi cestu k zaznamovemu adresaru --- napriklad ak sa nachadzas v proboj-2016-jar/observer, tak zadaj napriklad ../zaznamy/01\n");
+				return;
+			}
+		}
+		
 		// nacitaj stream a metadata
 		Scanner sc = null;
 		Scanner msc = null;
 		if (args.length == 0) {
 			sc = new Scanner(System.in);
-			Path kde = Paths.get(Observer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-			kde = kde.resolve("meta");
-			msc = new Scanner(kde);
+			msc = sc;
 		}
 		else {
 			Path dir = Paths.get("").resolve(args[0]);
 			Path obsubor = dir.resolve("observation");
-			Path metasubor = dir.resolve("meta");
 			sc = new Scanner(obsubor);
+			Path metasubor = dir.resolve("meta");
+			msc = new Scanner(metasubor);
 		}
 		ArrayList<Klient> klienti = new ArrayList<Klient>();
-		while (msc.hasNext()) {
-			String meno = msc.next();
-			float r = Float.parseFloat(msc.next());
-			float g = Float.parseFloat(msc.next());
-			float b = Float.parseFloat(msc.next());
-			float a = Float.parseFloat(msc.next());
+		String riadok = msc.nextLine();
+		while (!riadok.equals("end")) {
+			Scanner riad = new Scanner(riadok);
+			String meno = riad.next();
+			float r = Float.parseFloat(riad.next());
+			float g = Float.parseFloat(riad.next());
+			float b = Float.parseFloat(riad.next());
+			float a = Float.parseFloat(riad.next());
 			klienti.add(new Klient(meno, new Color(r,g,b,a)) );
+			riadok = msc.nextLine();
 		}
 
 
 		// inicializuj GUI
 		ObStav obs = new ObStav();
 		Visual vis = new Visual(obs.S, klienti);
+		Timebar timb = new Timebar(obs);
 		JFrame mainFrame = new JFrame("Observer");
+		mainFrame.getContentPane().setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.add(vis);
+		mainFrame.add(timb);
 		mainFrame.pack();
+
+		// nacitaj kolko sa len da
+		obs.ulozStav(sc);
+		obs.advanceTime();
+		mainFrame.repaint();
 		mainFrame.setVisible(true);
-		
 
 		// hlavny cyklus
-		while (sc.hasNext() || obs.historia.hasNext() || mainFrame.isVisible()) {
-			if (sc.hasNext()) {
-				while (!obs.ulozStav(sc)) {
-					System.out.format("changeDesc\n");
-				}
-				System.out.format("changeDesc\n");
-			}
+		while (true) {
 			long olddate = new Date().getTime();
-			while (obs.advanceTime()) {
-				mainFrame.repaint();
-				while (new Date().getTime() - olddate < obs.delay) {
-					
-				}
-				olddate = new Date().getTime();
+
+			boolean este = true;
+			while (este && !obs.endOfStream) {
+				System.out.format("changeDesc\n");
+				este = !obs.ulozStav(sc);
+			}
+			if (obs.hrac == -1) {
+				timb.rewinduj();
+			}
+			obs.advanceTime();
+			mainFrame.repaint();
+			while (new Date().getTime() - olddate < obs.delay) {
+				
 			}
 		}
 		

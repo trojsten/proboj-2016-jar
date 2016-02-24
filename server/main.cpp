@@ -19,7 +19,7 @@ using namespace std;
 
 #define MAX_CITAJ 1024
 #define TAH_CAS 10 // v milisekundach
-
+#define CAS_NA_INICIALIZACIU 2000 // ms
 
 vector<Klient> klienti;
 vector<unsigned> kposy;
@@ -29,9 +29,14 @@ string historia;
 
 
 // tato trapna funkcia existuje len kvoli inicializujSignaly()
+// btw, takto sa signal handling nerobi
+// len sa s tym nechceme babrat.
 void zabiKlientov() {
 	loguj("ukoncujem klientov");
 	for (unsigned i=0; i<klienti.size(); i++) {
+		if (klienti[i].getMeno() == "observer") {
+			continue;
+		}
 		klienti[i].zabi();
 	}
 }
@@ -67,14 +72,15 @@ void odpovedaj (unsigned k, stringstream& ss, string& resetAns) {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc < 4) {
-    fprintf(stderr, "usage: %s <zaznamovy-adresar> <mapa> {<adresare-klientov>...}\n", argv[0]);
+	if (argc < 5) {
+    fprintf(stderr, "usage: %s <zaznamovy-adresar> <mapa> <observer-mode> {<adresare-klientov>...}\n", argv[0]);
     return 1;
   }
   
 	unsigned int seed = time(NULL) * getpid();
   srand(seed);
-  loguj("startujem server, seed je %u", seed);
+  // loguj("startujem server, seed je %u", seed); // seed je nanic, lebo proboj je nedeterministicky
+  loguj("startujem server...");
   inicializujSignaly(zabiKlientov);
 
 	string zaznAdr(argv[1]);
@@ -93,17 +99,14 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "main/observationstream: neviem (o|vy)tvorit subor: %s\n", obsubor.c_str());
 		exit(EXIT_FAILURE);
 	}
-
+	
 	{
-		string metasubor = zaznAdr+"/meta";
-		fstream metastream(metasubor.c_str(), fstream::out | fstream::trunc);
-		string obsmetasubor = "observer/meta";
-		fstream obsmetastream(obsmetasubor.c_str(), fstream::out | fstream::trunc);
+		string metainfo;
 		
-		random_shuffle(argv + 3, argv + argc);
+		random_shuffle(argv + 4, argv + argc);
 		set<string> uzMena;
 		
-		for (int i=3; i<argc; i++) {
+		for (int i=4; i<argc; i++) {
 			string klientAdr(argv[i]);
 			// meno klienta je cast za poslednym /, za ktorym nieco je
 			int j = (int)klientAdr.size() - 1;
@@ -111,47 +114,86 @@ int main(int argc, char *argv[]) {
 				j--;
 			}
 			string meno = klientAdr.substr(j);
+			bool dajNahodnuFarbu = false;
 			while (uzMena.count(meno)) {
+				dajNahodnuFarbu = true;
 				meno += "+";
 			}
 			uzMena.insert(meno);
-			klienti.push_back(Klient(meno, klientAdr, zaznAdr));			
+			string uvodneData = "hrac " + toString<int>(i-4) + "\n";
+			klienti.push_back(Klient(meno, uvodneData, klientAdr, zaznAdr));			
 			kposy.push_back(0);
 			kodpovede.push_back("");
-			
-			string clsubor = klientAdr + "/color";
-			fstream clstream(clsubor.c_str(), fstream::in);
+
 			string riadok;
-			getline(clstream, riadok);
-			clstream.close();
-			metastream << meno << " " << riadok << "\n";
-			obsmetastream << meno << " " << riadok << "\n";
+			if (dajNahodnuFarbu) {
+				for (int i=0; i<3; i++) {
+					double cl = (double)(rand()%9999)/9999;
+					riadok += toString<double>(cl) + " ";
+				}
+				riadok += "1.0";
+			}
+			else {
+				string clsubor = klientAdr + "/color";
+				fstream clstream(clsubor.c_str(), fstream::in);
+				getline(clstream, riadok);
+				clstream.close();
+			}
+			metainfo += meno + " " + riadok + "\n";
 		}
+
+		// nastav observera-live / hraca-cloveka
+		if (strcmp(argv[3],"live")==0 || strcmp(argv[3],"play")==0) {
+			int i = strlen(argv[0]);
+			while (i>0 && argv[0][i-1]!='/') {
+				i--;
+			}
+			string meno = "observer";
+			string uvodneData;
+			if (strcmp(argv[3],"play")==0) {
+				metainfo += meno + " 0.75 0.75 0.75 1.0\n";
+				uvodneData = "hrac " + toString<unsigned>(klienti.size()) + "\n";
+			}
+			uvodneData = metainfo + "end\n" + uvodneData;
+			string adr = string(argv[0]).substr(0,i);
+			klienti.push_back(Klient(meno, uvodneData, adr, "./observer.jar", zaznAdr));
+			kposy.push_back(0);
+			kodpovede.push_back("");
+		}
+		string metasubor = zaznAdr+"/meta";
+		fstream metastream(metasubor.c_str(), fstream::out | fstream::trunc);
+		metastream << metainfo << "end\n";
 		metastream.close();
-		obsmetastream.close();
-		
+
 		for (unsigned k=0; k<klienti.size(); k++) {
 			klienti[k].restartuj();
-			klienti[k].posli("hrac " + itos(k) + "\n");
 		}
 	}
 
 	// nacita mapu
 	stav stavHry;
 	string mapAdr(argv[2]);
-	nacitajMapu(mapAdr, stavHry, klienti.size());
+	unsigned pocetHracov = argc - 4;
+	if (strcmp(argv[3],"play")==0) {
+		pocetHracov++;
+	}
+	nacitajMapu(mapAdr, stavHry, pocetHracov);
 
 	// zakoduje pociatocny stav a posle ho
+	// potom pocka chvilu --- cas na predpocitanie
 	stringstream pocStav;
 	koduj(pocStav, stavAlt(stavHry));
-	observationstream << pocStav.str() << "end\n";
+	observationstream << pocStav.str();
 	for (unsigned k=0; k<klienti.size(); k++) {
 		klienti[k].posli(pocStav.str() + "end\n");
 	}
+	usleep(CAS_NA_INICIALIZACIU*1000ll);
 
 	long long ltime = gettime();
-
-	while (stavHry.vyherca() == -1) {
+	inicializujStaty(pocetHracov,stavHry);
+	
+	bool koncim = false;
+	while (!koncim) {
 		string resetAns;
 		{
 			stringstream temp;
@@ -160,8 +202,9 @@ int main(int argc, char *argv[]) {
 		}
 		while (gettime() - ltime < TAH_CAS) {
 			for (unsigned k=0; k<klienti.size(); k++) {
-				if (!klienti[k].zije()) {
+				if (!klienti[k].zije() && (klienti[k].getMeno() != "observer")) {
 					klienti[k].restartuj();
+					klienti[k].posli(resetAns + "end\n");
 					continue;
 				}
 				stringstream riadky(klienti[k].citaj(MAX_CITAJ));
@@ -171,16 +214,16 @@ int main(int argc, char *argv[]) {
 		ltime = gettime();
 		
 		stringstream pokracovanieHistorie;
-		odsimulujKolo(stavHry, kodpovede, pokracovanieHistorie);
+		koncim = odsimulujKolo(stavHry, kodpovede, pokracovanieHistorie);
 		for (unsigned k=0; k<klienti.size(); k++) {
-			//cerr << k << " povedal: " << kodpovede[k] << "\n";
 			kodpovede[k].clear();
 		}
 		historia += pokracovanieHistorie.str();
 
-		observationstream << pokracovanieHistorie.str() << "end\n" << flush;
+		observationstream << pokracovanieHistorie.str();
 	}
 
+	// cleanup
   observationstream.close();
 	zabiKlientov();
 

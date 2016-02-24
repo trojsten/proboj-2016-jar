@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <climits>
 #include <unistd.h>
 using namespace std;
@@ -12,9 +13,17 @@ using namespace std;
 
 Klient::Klient () {}
 
-Klient::Klient (string _meno, string adresar, string zaznamovyAdresar)
-	: meno(_meno), poslRestart(-1)
+Klient::Klient (string _meno, string _uvodneData, string adresar, string execCommand, string zaznamovyAdresar)
+	: meno(_meno), uvodneData(_uvodneData), poslRestart(-1)
 {
+  vector<string> command;
+  command.push_back(execCommand);
+  proces.setProperties(command, adresar, zaznamovyAdresar + "/" + meno + ".log");
+}
+
+Klient::Klient (string _meno, string _uvodneData, string adresar, string zaznamovyAdresar)
+	: meno(_meno), uvodneData(_uvodneData), poslRestart(-1)
+{ // treba skopcit, lebo to co je v zatvorkach akosi nevie mat efekt vo vnorenom konstruktore, tj Klient(...) failne
   vector<string> command;
   command.push_back("./hrac");
   proces.setProperties(command, adresar, zaznamovyAdresar + "/" + meno + ".log");
@@ -32,6 +41,8 @@ void Klient::restartuj () {
 	poslRestart = ntime;
   precitane.clear();
   proces.restartuj();
+
+  posli(uvodneData);
 }
 
 string Klient::citaj (unsigned cap) {

@@ -7,8 +7,8 @@
 
 #include "common.h"
 
-string stavDesc (stav& stavHry) ;
+void inicializujStaty (unsigned pocHrac, stav& stavHry) ;
 
-void odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) ;
+bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) ;
 
 #endif

@@ -59,7 +59,7 @@ class SortingInterval<E> {
 	}
 
 	SortedSet<E> greaterOrEqual (int ll, int rr, E val) {
-		SortedSet<E> res = new TreeSet<E>();
+		SortedSet<E> res = new TreeSet<E>(comparator());
 		if (r<=ll || l>=rr) {
 			return res;
 		}

@@ -43,7 +43,7 @@ bool dekodujStav (istream& buf, stav& out) {
 		if (prikaz == "invAlt") {
 			invAlt inva;
 			nacitaj(buf,inva);
-			out.novaInv(inva);
+			out.nastavInv(inva);
 		}
 		if (prikaz == "stavAlt") {
 			stavAlt salt;

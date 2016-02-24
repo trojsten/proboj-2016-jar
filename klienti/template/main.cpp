@@ -32,10 +32,12 @@ void zistiTah() {
 	if (ine.size() == 0) {
 		return;
 	}
+	//cerr << "moje bunky a ich popy:\n";
 	int ciel = ine[ rand()%ine.size() ];
 	for (unsigned i=0; i<moje.size(); i++) {
 		int kto = moje[i];
-		int jednotiek = S.cely[kto].zistiPop()/2;
+		//cerr << kto << " " << S.cely[kto].zistiPop() << "\n";
+		int jednotiek = S.cely[kto].zistiPop();
 		prikaz(kto, ciel, jednotiek);
 	}
 }
@@ -45,7 +47,8 @@ int main() {
 
   unsigned seed = time(NULL) * getpid();
   srand(seed);
-  fprintf(stderr, "START pid=%d, seed=%u\n", getpid(), seed);
+  // fprintf(stderr, "START pid=%d, seed=%u\n", getpid(), seed);
+  fprintf(stderr, "START pid=%d\n", getpid());
 
 	string temp;
 	cin >> temp;
@@ -58,14 +61,14 @@ int main() {
 	}
 
 	dekodujStav(cin,S);
-	cout << "desc\n";
 	zistiTah();
 
   while (cin.good()) {
-		while (!dekodujStav(cin,S)) {
-			cout << "desc\n";
+		bool este = true;
+		while (cin.good() && este) {
+			cout << "changeDesc\n";
+			este = !dekodujStav(cin,S);
 		}
-		cout << "desc\n";
 		zistiTah();
 	}
 
