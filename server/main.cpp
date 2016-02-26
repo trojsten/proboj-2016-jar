@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 			string meno = "observer";
 			string uvodneData;
 			if (strcmp(argv[3],"play")==0) {
-				metainfo += meno + " 0.75 0.75 0.75 1.0\n";
+				metainfo += meno + " 1.0 1.0 0.0 1.0\n";
 				uvodneData = "hrac " + toString<unsigned>(klienti.size()) + "\n";
 			}
 			uvodneData = metainfo + "end\n" + uvodneData;

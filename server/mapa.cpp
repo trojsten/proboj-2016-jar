@@ -21,10 +21,10 @@ void nacitajMapu (string filename, stav& S, const int pocHrac) {
 	vector<int> starty;
 	for (int i=0; i<(int)salt.cely.size(); i++) {
 		salt.cely[i].id = i;
-		salt.cely[i].vlastnik = -1;
-		if (salt.cely[i].zistiPop() > 0) {
+		if (salt.cely[i].vlastnik >= 0) {
 			starty.push_back(i);
 		}
+		salt.cely[i].vlastnik = -1;
 	}
 	random_shuffle(starty.begin(), starty.end());
 	for (int i=0; i<pocHrac; i++) {

@@ -24,7 +24,7 @@ void Proces::write (string data) {
 		int status = ::write(writefd, data.c_str()+cur, wlen);
 		if (status != (int)wlen) {
 			if (status == -1) {
-				fprintf(stderr, "write: pid %d: %s\n", pid, strerror(errno));
+				//fprintf(stderr, "write: pid %d: %s\n", pid, strerror(errno));
 			}
 			else {
 				fprintf(stderr, "write: pid %d: zapisali sme len %d bajtov z %d\n", pid, status, wlen);
@@ -54,7 +54,6 @@ void Proces::zabi () {
 			int status = kill(pid, SIGTERM);
 			if (status == -1) {
 				fprintf(stderr, "zabi/kill: pid %d: %s\n", pid, strerror(errno));
-				return ;
 			}
 			pid = -1;
 		}
@@ -62,7 +61,6 @@ void Proces::zabi () {
 			int status = close(writefd);
 			if (status == -1) {
 				fprintf(stderr, "zabi/close_writefd: pid %d: %s\n", pid, strerror(errno));
-				return ;
 			}
 			writefd = -1;
 		}
@@ -70,7 +68,6 @@ void Proces::zabi () {
 			int status = close(readfd);
 			if (status == -1) {
 				fprintf(stderr, "zabi/close_readfd: pid %d: %s\n", pid, strerror(errno));
-				return ;
 			}
 			readfd = -1;
 		}

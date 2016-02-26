@@ -8,7 +8,7 @@ using namespace std;
 #include "util.h"
 
 
-#define CAS_DO_RESTARTU 1000ll
+#define CAS_DO_RESTARTU 5000ll
 
 
 Klient::Klient () {}

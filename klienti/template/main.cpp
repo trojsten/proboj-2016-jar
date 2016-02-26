@@ -37,7 +37,7 @@ void zistiTah() {
 	for (unsigned i=0; i<moje.size(); i++) {
 		int kto = moje[i];
 		//cerr << kto << " " << S.cely[kto].zistiPop() << "\n";
-		int jednotiek = S.cely[kto].zistiPop();
+		int jednotiek = S.cely[kto].zistiPop()/2;
 		prikaz(kto, ciel, jednotiek);
 	}
 }

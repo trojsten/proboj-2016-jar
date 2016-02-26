@@ -32,6 +32,9 @@ void zistiTah() {
 	if (ine.size() == 0) {
 		return;
 	}
+	if (moje.size() == 0) {
+		return;
+	}
 	int ciel = ine[ rand()%ine.size() ];
 	int start = moje[ rand()%moje.size()];
 	int jednotiek = S.cely[start].zistiPop()/2;

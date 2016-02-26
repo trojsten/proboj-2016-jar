@@ -20,7 +20,7 @@ static atomic<pid_t> hlavnyProces(0);
 static atomic<bool> praveUkoncujem(false);
 
 static void shutdownHandler (int signum) {
-	signal(signum, SIG_DFL); // toto prve --- chceme zarucit, ze ak sa znova zavola, tak ma zabije
+	signal(signum, SIG_DFL);
   if (getpid() == hlavnyProces && !praveUkoncujem) {
     praveUkoncujem = true;
     loguj("dostal som ukoncovaci signal %s", strsignal(signum));
