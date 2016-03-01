@@ -357,15 +357,6 @@ class Visual extends JComponent {
 		}
 	}
 	void clovekuj () {
-		if (mbState == 1) {
-			System.err.format("stlaceny\n");
-		}
-		if (mbState == 0) {
-			System.err.format("prave uvolneny\n");
-		}
-		if (mbState == -1) {
-			System.err.format("volny\n");
-		}
 		Point kurzor = getMousePosition();
 		if (kurzor == null || mbState == -1) {
 			return;
@@ -426,18 +417,33 @@ class Visual extends JComponent {
 		Bod diff = poz.minus(cel.pozicia);
 		return (diff.dist() <= maxPolomerBunky(cel));
 	}
-	void nakresliBunku (Bunka cel, Graphics g, boolean aktivny) {
+	void clovekujBunku (Bunka cel, Graphics g) {
+		if (!aktivni[cel.id]) {
+			return;
+		}
+		Point kurzor = getMousePosition();
+		if (kurzor == null) {
+			return;
+		}
+		int x = cel.pozicia.x;
+		int y = cel.pozicia.y;
+		int r = maxPolomerBunky(cel) + 1;
+		int kx = (int)kurzor.getX();
+		int ky = (int)kurzor.getY();
+		g.setColor(Color.WHITE);
+		g.drawLine(kx, ky, x, y);
+		g.drawOval(x-r, y-r, 2*r, 2*r);
+	}
+	void nakresliBunku (Bunka cel, Graphics g) {
 		int vlastnik = cel.vlastnik;
 		Color fillcl = Color.GRAY;
 		if (vlastnik >= 0) {
 			fillcl = klienti.get(vlastnik).cl;
 		}
-		
 		int x = cel.pozicia.x;
 		int y = cel.pozicia.y;
 		int maxr = maxPolomerBunky(cel);
 		int r = polomerBunky(cel);
-		
 		g.setColor(Color.RED);
 		g.drawOval(x-maxr, y-maxr, 2*maxr, 2*maxr);
 		g.setColor(fillcl);
@@ -482,14 +488,19 @@ class Visual extends JComponent {
 		g.fillRect(0,0,getWidth(),getHeight());
 		if (S.cely != null) {
 			for (int i=0; i<S.cely.size(); i++) {
-				nakresliBunku(S.cely.get(i), g, aktivni[i]);
+				clovekujBunku(S.cely.get(i), g);
+			}
+			for (int i=0; i<S.cely.size(); i++) {
+				nakresliBunku(S.cely.get(i), g);
 			}
 		}
 		if (S.invPodlaCasu != null) {
 			for (int i=0; i<S.invPodlaCasu.size(); i++) {
 				ArrayList<Invazia> invy = S.invPodlaCasu.get(i);
-				for (int j=0; j<invy.size(); j++) {
-					nakresliInv(invy.get(j), g);
+				if (invy != null) {
+					for (int j=0; j<invy.size(); j++) {
+						nakresliInv(invy.get(j), g);
+					}
 				}
 			}
 		}
@@ -509,8 +520,18 @@ class Vesmir {
 	class keyHandler extends KeyAdapter {
 		public void keyPressed (KeyEvent e) {
 			int key = e.getKeyCode();
-			if (key == KeyEvent.VK_P) {
-				obs.paused = !obs.paused;
+			if (obs.hrac == -1) {
+				if (key == KeyEvent.VK_P) {
+					obs.paused = !obs.paused;
+				}
+				if (key == KeyEvent.VK_ADD) {
+					if (obs.delay > 1) {
+						obs.delay--;
+					}
+				}
+				if (key == KeyEvent.VK_SUBTRACT) {
+					obs.delay++;
+				}
 			}
 		}
 	}
@@ -580,10 +601,15 @@ class Vesmir {
 				timb.zmena = -1;
 				vis.clovekuj();
 			}
-			obs.advanceTime();
 			mainFrame.repaint();
-			while (new Date().getTime() - olddate < obs.delay) {
+			do {
+				long pred = new Date().getTime();
+				obs.advanceTime();
+				while (new Date().getTime() - pred < obs.delay) {
+				}
 			}
+			while (new Date().getTime() - olddate < 10) ;
+			// mainFrame.repaint(); // tu to dava divne artifakty pri rewindovani, asi preto, ze repaint nie je okamzity
 		}
 	}
 	void spusti (String _args[]) throws IOException {

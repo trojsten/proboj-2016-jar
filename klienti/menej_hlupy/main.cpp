@@ -37,11 +37,10 @@ void zistiTah() {
 	}
 	int ciel = ine[ rand()%ine.size() ];
 	int start = moje[ rand()%moje.size()];
-	int jednotiek = S.cely[start].zistiPop()/2;
-	if (jednotiek >10){
+	if (S.cely[start].zistiPop() == S.cely[start].kapacita) {
+		int jednotiek = S.cely[start].zistiPop()/2;
 		prikaz(start, ciel, jednotiek);
 	}
-	
 }
 
 int main() {
