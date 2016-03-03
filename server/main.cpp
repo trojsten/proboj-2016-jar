@@ -71,6 +71,15 @@ void odpovedaj (unsigned k, stringstream& ss, string& resetAns) {
 	}
 }
 
+template<class T> void checkOstream(T& s, string filename) {
+  if (s.fail()) {
+    fprintf(stderr, "neviem zapisovat do %s\n", filename.c_str());
+    zabiKlientov();
+    exit(1);
+  }
+}
+
+
 int main(int argc, char *argv[]) {
 	if (argc < 5) {
     fprintf(stderr, "usage: %s <zaznamovy-adresar> <mapa> <observer-mode> {<adresare-klientov>...}\n", argv[0]);
@@ -178,7 +187,7 @@ int main(int argc, char *argv[]) {
 		pocetHracov++;
 	}
 	nacitajMapu(mapAdr, stavHry, pocetHracov);
-
+	
 	// zakoduje pociatocny stav a posle ho
 	// potom pocka chvilu --- cas na predpocitanie
 	stringstream pocStav;
@@ -222,10 +231,20 @@ int main(int argc, char *argv[]) {
 
 		observationstream << pokracovanieHistorie.str();
 	}
-
+	
 	// cleanup
-  observationstream.close();
+	observationstream.close();
 	zabiKlientov();
+	
+	vector<int> vysledky(klienti.size());
+	for (unsigned i = 0; i < klienti.size(); i++) {
+		vysledky[i] = i; //TODO zisti skore
+	}
+
+	ofstream rankstream((zaznAdr+"/rank").c_str());
+	uloz(rankstream, vysledky);
+	rankstream.close();
+	checkOstream(rankstream, zaznAdr+"/rank");
 
   return 0;
 }

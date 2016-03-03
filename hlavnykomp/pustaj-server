@@ -49,7 +49,7 @@ state=playing" > $dir.manifest
     echo "${nazvy[$i]}"
   done > $dir/titles
 
-  if ./server/server $dir $mapa ${buildy[@]} &>$dir/stderr.srv; then
+  if ./server/server $dir $mapa option ${buildy[@]} &>$dir/stderr.srv; then
     rank=`tail -n+2 $dir/rank`
     echo "hotovo"
     echo "rank=${rank//$'\n'/,}" >> $dir.manifest
