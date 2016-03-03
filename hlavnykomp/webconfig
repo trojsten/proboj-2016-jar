@@ -1,0 +1,10 @@
+# -*- coding: utf8 -*-
+
+DRUZINKY = [
+  ('ha', u'hrac a', b'b13efbb2c1020b83f147f17843c8fad117ef39f3'),
+  ('hb', u'hrac b', b'3140f70a5c9c8abcab717a97f5de2901a64af6b7'),  
+]
+
+GIT = 'git://192.168.0.111/proboj'
+
+SECRET_KEY = 'XRb2NzEpXIO1XX3kLGc7zYSbBQGn5l'

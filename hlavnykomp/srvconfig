@@ -1,0 +1,8 @@
+
+klienti=( ha hb )
+mapy=( mapy/*.map )
+nazvy=(
+  'hrac a'
+  'hrac b'
+)
+
