@@ -3,12 +3,15 @@ using namespace std;
 
 #include <vector>
 #include <sstream>
+#include <ostream>
 #include <algorithm>
 #include <math.h>
 
 #include "common.h"
 #include "update.h"
 #include "marshal.h"
+
+#define INF 1023456789ll
 
 // cast 1 --- uchovavanie si info o hre pre rychly retrieval a rychle rozhodovanie, ci hra uz skoncila
 // a pomocne funkcie, existencia tohto je sposobena tym, ze nechceme clutterovat common vecami iba
@@ -31,7 +34,7 @@ struct staty {
 		}
 		else
 		if (pocZivych[vlastnik] == val) {
-			casUmrtia[vlastnik] = -1;
+			casUmrtia[vlastnik] = INF;
 			zostHracov++;
 		}
 	}
@@ -70,6 +73,10 @@ staty stats;
 
 void inicializujStaty (unsigned pocHrac,stav& stavHry) {
 	stats = staty(pocHrac,stavHry);
+}
+
+void ulozUmrtia (vector<int>& V) {
+	V = stats.casUmrtia;
 }
 
 void nastavBunku (int id, int vlastnik, int populacia, stav& stavHry) {

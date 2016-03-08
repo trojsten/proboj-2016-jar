@@ -237,14 +237,15 @@ int main(int argc, char *argv[]) {
 	// cleanup
 	observationstream.close();
 	zabiKlientov();
-	
-	vector<int> vysledky(klienti.size());
-	for (unsigned i = 0; i < klienti.size(); i++) {
-		vysledky[i] = i; //TODO zisti skore
-	}
 
+	// vypis casy umrtia jednotlivych hracov
 	ofstream rankstream((zaznAdr+"/rank").c_str());
-	uloz(rankstream, vysledky);
+	vector<int> casUmrtia;
+	ulozUmrtia(casUmrtia);
+	rankstream << pocetHracov << "\n";
+	for (int i=0; i<pocetHracov; i++) {
+		rankstream << klienti[i].getMeno() << " " << casUmrtia[i] << "\n";
+	}
 	rankstream.close();
 	checkOstream(rankstream, zaznAdr+"/rank");
 
