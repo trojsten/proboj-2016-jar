@@ -11,8 +11,8 @@ int velkyCas;
 string bod::nazovtyp () {
 	return "bod";
 }
-string bunka::nazovtyp () {
-	return "bunka";
+string mesto::nazovtyp () {
+	return "mesto";
 }
 string invazia::nazovtyp () {
 	return "invazia";
@@ -41,9 +41,9 @@ double bod::dist () const {
 }
 
 
-bunka::bunka () {}
+mesto::mesto () {}
 
-int bunka::zistiPop () {
+int mesto::zistiPop () {
 	if (vlastnik == -1) {
 		poslCas = velkyCas;
 		return populacia;
@@ -56,14 +56,14 @@ int bunka::zistiPop () {
 	return populacia;
 }
 
-int bunka::def () {
+int mesto::def () {
 	return obrana*zistiPop() + stena;
 }
 
 
 invazia::invazia () {}
 
-invazia::invazia (int odch, int prich, int vlast, bunka* odkial, bunka* kamze, int jedn)
+invazia::invazia (int odch, int prich, int vlast, mesto* odkial, mesto* kamze, int jedn)
 	: odchod(odch), prichod(prich), vlastnik(vlast), od(odkial), kam(kamze), jednotiek(jedn) {}
 
 int invazia::atk () {
@@ -90,18 +90,18 @@ stav::stav () {
 
 stav::stav (stavAlt& S) {
 	cas = S.cas;
-	for (unsigned i=0; i<S.cely.size(); i++) {
-		cely.push_back(S.cely[i]);
+	for (unsigned i=0; i<S.mesta.size(); i++) {
+		mesta.push_back(S.mesta[i]);
 	}
 	for (unsigned i=0; i<S.invZoznam.size(); i++) {
 		nastavInv(S.invZoznam[i]);
 	}
 }
 
-void stav::nastavBunku (int id, int vlastnik, int populacia) {
-	cely[id].vlastnik = vlastnik;
-	cely[id].populacia = populacia;
-	cely[id].poslCas = velkyCas;
+void stav::nastavMesto (int id, int vlastnik, int populacia) {
+	mesta[id].vlastnik = vlastnik;
+	mesta[id].populacia = populacia;
+	mesta[id].poslCas = velkyCas;
 }
 
 void stav::nastavCas (int t) {
@@ -122,7 +122,7 @@ void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, in
 	while ((int)invPodlaCasu.size() <= diff) {
 		invPodlaCasu.push_back(vector<invazia*>());
 	}
-	invazia* ptr = new invazia(odchod, prichod, vlastnik, &cely[od], &cely[kam], jednotiek);
+	invazia* ptr = new invazia(odchod, prichod, vlastnik, &mesta[od], &mesta[kam], jednotiek);
 	invPodlaCasu[diff].push_back(ptr);
 }
 void stav::nastavInv (invAlt inva) {
@@ -134,8 +134,8 @@ stavAlt::stavAlt () : cas(0) {}
 
 stavAlt::stavAlt (stav& S) {
 	cas = S.cas;
-	for (unsigned i=0; i<S.cely.size(); i++) {
-		cely.push_back(S.cely[i]);
+	for (unsigned i=0; i<S.mesta.size(); i++) {
+		mesta.push_back(S.mesta[i]);
 	}
 	for (unsigned t=0; t<S.invPodlaCasu.size(); t++) {
 		for (unsigned i=0; i<S.invPodlaCasu[t].size(); i++) {

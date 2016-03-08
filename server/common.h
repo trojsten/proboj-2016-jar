@@ -13,7 +13,7 @@ using namespace std;
 extern int velkyCas; // identicke s casom v stave
 
 struct bod ;
-struct bunka ;
+struct mesto ;
 struct invazia ;
 struct invAlt ;
 struct stav ;
@@ -32,8 +32,8 @@ struct bod {
 	static string nazovtyp () ;
 };
 
-struct bunka {
-	int populacia; // nepouzivat --- na zistenie populacie je zistiPop() !!!!!!!!!
+struct mesto {
+	int populacia; //WARNING nepouzivat --- na zistenie populacie je zistiPop() !!!!!!!!!
 	int poslCas;
 
 	int id, vlastnik;
@@ -41,10 +41,10 @@ struct bunka {
 	int utok, obrana, stena;
 	bod pozicia;
 	
-	bunka () ;
+	mesto () ;
 
 	int zistiPop () ;
-	int def () ; // celkova obranna sila bunky (vypocitana zo zistiPop(), obrany a steny)
+	int def () ; // celkova obranna sila mesta (vypocitana zo zistiPop(), obrany a steny)
 
 	static string nazovtyp () ;
 };
@@ -53,12 +53,12 @@ struct invazia {
 	int odchod;
 	int prichod;
 	int vlastnik;
-	bunka* od;
-	bunka* kam;
+	mesto* od;
+	mesto* kam;
 	int jednotiek;
 
 	invazia () ;
-	invazia (int odch, int prich, int vlast, bunka* odkial, bunka* kamze, int jedn) ;
+	invazia (int odch, int prich, int vlast, mesto* odkial, mesto* kamze, int jedn) ;
 	
 	int atk () ; // celkova utocna sila invazie
 	int def () ; // celkova obranna sila obrancu
@@ -78,13 +78,13 @@ struct invAlt { // alternativna reprezentacia invazie
 
 struct stav {
 	int cas;
-	vector<bunka> cely;
+	vector<mesto> mesta;
 	deque<vector<invazia*> > invPodlaCasu;
 
 	stav () ;
 	stav (stavAlt& S) ;
 	
-	void nastavBunku (int id, int vlastnik, int populacia) ;
+	void nastavMesto (int id, int vlastnik, int populacia) ;
 	void nastavCas (int t) ;
 
 	void nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) ;
@@ -95,7 +95,7 @@ struct stav {
 
 struct stavAlt { // alternativna reprezentacia stavu
 	int cas;
-	vector<bunka> cely;
+	vector<mesto> mesta;
 	vector<invAlt> invZoznam;
 
 	stavAlt () ;
@@ -115,7 +115,7 @@ reflection(bod);
   member(y);
 end();
 
-reflection(bunka);
+reflection(mesto);
 	member(populacia);
 	member(poslCas);
 	member(id);
@@ -139,7 +139,7 @@ end();
 
 reflection(stavAlt);
 	member(cas);
-	member(cely);
+	member(mesta);
 	member(invZoznam);
 end();
 

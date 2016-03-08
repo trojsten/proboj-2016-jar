@@ -47,8 +47,8 @@ struct staty {
 			casUmrtia.push_back(0);
 			pocZivych.push_back(0);
 		}
-		for (unsigned i=0; i<stavHry.cely.size(); i++) {
-			int vlastnik = stavHry.cely[i].vlastnik;
+		for (unsigned i=0; i<stavHry.mesta.size(); i++) {
+			int vlastnik = stavHry.mesta[i].vlastnik;
 			add(vlastnik, 1);
 		}
 		for (unsigned t=0; t<stavHry.invPodlaCasu.size(); t++) {
@@ -79,12 +79,12 @@ void ulozUmrtia (vector<int>& V) {
 	V = stats.casUmrtia;
 }
 
-void nastavBunku (int id, int vlastnik, int populacia, stav& stavHry) {
+void nastavMesto (int id, int vlastnik, int populacia, stav& stavHry) {
 	if (populacia == 0) {
 		vlastnik = -1;
 	}
-	stats.add(stavHry.cely[id].vlastnik, -1);
-	stavHry.nastavBunku(id, vlastnik, populacia);
+	stats.add(stavHry.mesta[id].vlastnik, -1);
+	stavHry.nastavMesto(id, vlastnik, populacia);
 	stats.add(vlastnik, 1);
 }
 
@@ -108,20 +108,20 @@ void advanceCas (stav& stavHry) {
 /////////////////////////////////////////////////////////////////////
 
 bool oprav (invAlt& inva, int hrac, stav& stavHry) {
-	if (inva.od<0 || inva.od>=(int)stavHry.cely.size()) {
+	if (inva.od<0 || inva.od>=(int)stavHry.mesta.size()) {
 		return false;
 	}
-	if (inva.kam<0 || inva.kam>=(int)stavHry.cely.size()) {
+	if (inva.kam<0 || inva.kam>=(int)stavHry.mesta.size()) {
 		return false;
 	}
 	if (inva.od == inva.kam) {
 		return false;
 	}
-	if (stavHry.cely[inva.od].vlastnik != hrac) {
+	if (stavHry.mesta[inva.od].vlastnik != hrac) {
 		return false;
 	}
 	
-	int popcap = stavHry.cely[inva.od].zistiPop();
+	int popcap = stavHry.mesta[inva.od].zistiPop();
 	if (inva.jednotiek > popcap) {
 		inva.jednotiek = popcap;
 	}
@@ -129,7 +129,7 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 		return false;
 	}
 	
-	bod smer = stavHry.cely[inva.kam].pozicia - stavHry.cely[inva.od].pozicia;
+	bod smer = stavHry.mesta[inva.kam].pozicia - stavHry.mesta[inva.od].pozicia;
 	inva.prichod = stavHry.cas + int(ceil(smer.dist()) );
 	inva.odchod = stavHry.cas;
 	inva.vlastnik = hrac;
@@ -139,7 +139,7 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 void vykonaj (invazia inv, stav& stavHry) {
 	int kto[2] = {inv.vlastnik, inv.kam->vlastnik};
 	if (kto[0] == kto[1]) {
-		nastavBunku(inv.kam->id, kto[0], inv.kam->zistiPop() + inv.jednotiek, stavHry);
+		nastavMesto(inv.kam->id, kto[0], inv.kam->zistiPop() + inv.jednotiek, stavHry);
 		return;
 	}
 	int povjedn[2] = {inv.jednotiek, inv.kam->zistiPop()};
@@ -177,15 +177,15 @@ void vykonaj (invazia inv, stav& stavHry) {
 		if (zost[i]==0) {
 			continue;
 		}
-		nastavBunku(inv.kam->id, kto[i], zost[i], stavHry);
+		nastavMesto(inv.kam->id, kto[i], zost[i], stavHry);
 		return ;
 	}
-	nastavBunku(inv.kam->id, -1, 0, stavHry);
+	nastavMesto(inv.kam->id, -1, 0, stavHry);
 }
 
 bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream& pokrac) {
 	vector<bool> zmenene;
-	for (unsigned i=0; i<stavHry.cely.size(); i++) {
+	for (unsigned i=0; i<stavHry.mesta.size(); i++) {
 		zmenene.push_back(false);
 	}
 	
@@ -200,9 +200,9 @@ bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 				if (oprav(inva, i, stavHry)) {
 					novaInv(inva,stavHry);
 					{
-						int vlastnikOd = stavHry.cely[inva.od].vlastnik;
-						int npop = stavHry.cely[inva.od].zistiPop() - inva.jednotiek;
-						nastavBunku(inva.od, vlastnikOd, npop, stavHry);
+						int vlastnikOd = stavHry.mesta[inva.od].vlastnik;
+						int npop = stavHry.mesta[inva.od].zistiPop() - inva.jednotiek;
+						nastavMesto(inva.od, vlastnikOd, npop, stavHry);
 					}
 					koduj(pokrac,inva);
 					zmenene[inva.od] = true;
@@ -222,12 +222,12 @@ bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 		}
 	}
 	
-	// info o zmenenych bunkach
+	// info o zmenenych mestach
 	for (unsigned i=0; i<zmenene.size(); i++) {
 		if (!zmenene[i]) {
 			continue;
 		}
-		koduj(pokrac,stavHry.cely[i]);
+		koduj(pokrac,stavHry.mesta[i]);
 	}
 	
 	// casova zmena

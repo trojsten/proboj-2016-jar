@@ -35,10 +35,10 @@ bool dekodujStav (istream& buf, stav& out) {
 	bool asponJeden = false;
 	while (!(prikaz == "end")) {
 		asponJeden = true;
-		if (prikaz == "bunka") {
-			bunka cel;
+		if (prikaz == "mesto") {
+			mesto cel;
 			nacitaj(buf,cel);
-			out.nastavBunku(cel.id, cel.vlastnik, cel.zistiPop());
+			out.nastavMesto(cel.id, cel.vlastnik, cel.zistiPop());
 		}
 		if (prikaz == "invAlt") {
 			invAlt inva;

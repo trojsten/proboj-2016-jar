@@ -68,7 +68,7 @@ public class Stav
 			if (prikaz.equals("end")) {
 				break;
 			}
-			if (prikaz.equals("bunka")) {
+			if (prikaz.equals("mesto")) {
 				Bunka cel = new Bunka();
 				cel.nacitaj(sc);
 				nastavBunku(cel.id, cel.vlastnik, cel.zistiPop());

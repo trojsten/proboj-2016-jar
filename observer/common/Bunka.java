@@ -75,7 +75,7 @@ public class Bunka
 		pozicia.nacitaj(sc);
 	}
 	public void koduj (PrintStream out) {
-		out.format("bunka ");
+		out.format("mesto ");
 		uloz(out);
 		out.format("\n");
 	}
