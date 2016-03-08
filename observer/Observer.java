@@ -71,7 +71,7 @@ class CellHistory {
 			historia.setPos(npos);
 			String riadok = historia.nextLine();
 			Scanner sc = new Scanner(riadok);
-			sc.next(); // zbav sa dekoratora "bunka"
+			sc.next(); // zbav sa dekoratora "mesto"
 			S.cely.get(i).nacitaj(sc);
 			// sc.close();
 		}
@@ -225,7 +225,7 @@ class ObStav {
 					delay = 0;
 					continue;
 				}
-				if (prikaz.equals("bunka")) {
+				if (prikaz.equals("mesto")) {
 					Bunka cel = new Bunka();
 					cel.nacitaj(riad);
 					celh.nastav(poslCas, historia.length(), cel);

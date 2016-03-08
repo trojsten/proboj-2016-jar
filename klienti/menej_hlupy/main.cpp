@@ -21,8 +21,8 @@ void prikaz (int od, int kam, int jednotiek) {
 // co tato funkcia rozhodne pomocou toho, ako nastavi prikaz;
 void zistiTah() {
   vector<int> moje, ine;
-  for (unsigned i=0; i<S.cely.size(); i++) {
-		if (S.cely[i].vlastnik == ja) {
+  for (unsigned i=0; i<S.mesta.size(); i++) {
+		if (S.mesta[i].vlastnik == ja) {
 			moje.push_back(i);
 		}
 		else {
@@ -37,8 +37,8 @@ void zistiTah() {
 	}
 	int ciel = ine[ rand()%ine.size() ];
 	int start = moje[ rand()%moje.size()];
-	if (S.cely[start].zistiPop() == S.cely[start].kapacita) {
-		int jednotiek = S.cely[start].zistiPop()/2;
+	if (S.mesta[start].zistiPop() == S.mesta[start].kapacita) {
+		int jednotiek = S.mesta[start].zistiPop()/2;
 		prikaz(start, ciel, jednotiek);
 	}
 }

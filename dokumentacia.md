@@ -36,7 +36,7 @@ vnútri `klienti`, nastavte v jeho `Makefile` správny `SERVERDIR` a spustite
 Potom spustite `./server/server zaznamy/01 mapy/mapa1.ppm asdf klienti/vasklient
 klienti/vasklient klienti/hlupy` To spustí hru s troma hráčmi (vaším, druhým
 vaším a hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
-`./server/observer.jar zaznamy/01`.
+`./server/observer.jar zaznamy/01`. 
 
 Keď server spustíte u vás, je to len na skúšku. Na hlavnom počítači to beží na
 ostro. Je tam aj webové rozhranie, cez ktoré môžete uploadovať vašich klientov.
@@ -58,6 +58,13 @@ určili poslednou sadou argumentov pri spúšťaní servera.
 
 Aký je proboj
 -------------
+
+V tomto proboji budete rozširovať svoj vplyv aj do ostatných kútov sveta.
+#TODO
+Bude sa hrať virus wars.
+
+Pravidlá hry
+------------
 
 Máme mapku. A v nej sú na nejakých pozíciách mestá, každé pod kontrolou niektorého
 hráča, pričom je jeden špeciálny typ hráča "neutrál".
@@ -87,14 +94,12 @@ Cieľom hry je prežiť dlhšie, ako ostatní (normálni, teda nie neutrálni) h
 Ako sa ťahá
 -----------
 
-
-
-
-Pravidlá hry
-------------
-
+Hrá sa real time. To znamená, že keď pošlete ťah, tak sa ťah urobí. To znamená, že môžete vynechať nejaké kolo.
 
 
 Mapy
 ----
+Mapy sú úplne textové a majú príponu .map .
+
+
 
