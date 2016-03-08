@@ -14,6 +14,7 @@ class Kreslo extends JComponent {
 	Stav S;
 	boolean zmenaPolohy;
 	Bunka ktora;
+	int step;
 
 	public Kreslo () {
 		S = new Stav();
@@ -74,6 +75,7 @@ class Kreslo extends JComponent {
 			nova.kapacita = 400;
 			nova.obrana = 1;
 			nova.pozicia = new Bod(e.getX(), e.getY());
+			nova.id = S.cely.size();
 			S.cely.add(nova);
 			
 			repaint();
@@ -91,25 +93,31 @@ class Kreslo extends JComponent {
 			if (ktora != null) {
 				// nastav populaciu
 				if (key == KeyEvent.VK_Q) {
-					ktora.populacia++;
+					ktora.populacia += step;
 					if (ktora.populacia > ktora.kapacita) {
 						ktora.populacia = ktora.kapacita;
 					}
 				}
 				if (key == KeyEvent.VK_A) {
-					if (ktora.populacia > 0) {
-						ktora.populacia--;
+					ktora.populacia -= step;
+					if (ktora.populacia < 0) {
+						ktora.populacia = 0;
 					}
 				}
 				// nastav kapacitu
 				if (key == KeyEvent.VK_W) {
-					ktora.kapacita++;
+					ktora.kapacita += step;
 				}
 				if (key == KeyEvent.VK_S) {
-					if (ktora.kapacita > 0) {
-						ktora.kapacita--;
+					ktora.kapacita -= step;
+					if (ktora.kapacita < 0) {
+						ktora.kapacita = 0;
+					}
+					if (ktora.populacia > ktora.kapacita) {
+						ktora.populacia = ktora.kapacita;
 					}
 				}
+				// nasledovne "generujuce" parametre ignoruju step
 				// nastav rast
 				if (key == KeyEvent.VK_E) {
 					ktora.rast++;
@@ -122,8 +130,9 @@ class Kreslo extends JComponent {
 					ktora.utok++;
 				}
 				if (key == KeyEvent.VK_F) {
-					if (ktora.utok > 0) {
-						ktora.utok--;
+					ktora.utok--;
+					if (ktora.utok < 0) {
+						ktora.utok = 0;
 					}
 				}
 				// nastav obranu
@@ -142,7 +151,25 @@ class Kreslo extends JComponent {
 				}
 				// nastav spawnovost
 				if (key == KeyEvent.VK_SPACE) {
-					ktora.vlastnik *= -1;
+					if (ktora.vlastnik == -1) {
+						ktora.vlastnik = 0;
+					}
+					else {
+						ktora.vlastnik = -1;
+					}
+				}
+				// nastav step
+				if (key>=KeyEvent.VK_0 && key<=KeyEvent.VK_9) {
+					int exponent = key - KeyEvent.VK_0;
+					step = 1;
+					for (int i=0; i<exponent; i++) {
+						step *= 2;
+					}
+				}
+				// zmaz bunku
+				if (key == KeyEvent.VK_DELETE) {
+					S.cely.remove(ktora);
+					ktora = null;
 				}
 			}
 		}
@@ -230,9 +257,18 @@ class Univerzum {
 
 	void init (String[] _args) {
 		args = _args;
+		vykres = new Kreslo();
+		try {
+			Scanner sc = new Scanner(new File(args[0]));
+			StavAlt salt = new StavAlt();
+			salt.nacitaj(sc);
+			vykres.S = new Stav(salt);
+		}
+		catch (Exception exc) { // takto sa to nerobii
+			System.err.format("nepodarilo sa otvorit mapu (asi neexistuje) --- vytvaram\n");
+		}
 		mainFrame = new JFrame("Leveler");
 		mainFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		vykres = new Kreslo();
 		mainFrame.add(vykres);
 		mainFrame.pack();
 		mainFrame.repaint();
@@ -266,7 +302,7 @@ class Univerzum {
 public class Leveler {
 	public static void main (String args[]) {
 		if (args.length == 0) {
-			System.out.format("ocakavam nazov mapy == suboru, do ktoreho zapisovat, napriklad \"template.map\"\n");
+			System.out.format("Ocakavam nazov mapy == suboru, do ktoreho zapisovat, resp. z ktoreho citat. Napriklad \"template.map\"\n");
 			return;
 		}
 
