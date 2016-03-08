@@ -17,6 +17,8 @@ using namespace std;
 #include "mapa.h"
 #include "marshal.h"
 
+#define PRECISION 10000
+
 #define MAX_CITAJ 1024
 #define TAH_CAS 10 // v milisekundach
 #define CAS_NA_INICIALIZACIU 2000 // ms
@@ -32,7 +34,7 @@ string historia;
 // btw, takto sa signal handling nerobi
 // len sa s tym nechceme babrat.
 void zabiKlientov() {
-	loguj("ukoncujem klientov");
+	fprintf(stderr, "ukoncujem klientov\n");
 	for (unsigned i=0; i<klienti.size(); i++) {
 		if (klienti[i].getMeno() == "observer") {
 			continue;
@@ -137,7 +139,7 @@ int main(int argc, char *argv[]) {
 			string riadok;
 			if (dajNahodnuFarbu) {
 				for (int i=0; i<3; i++) {
-					double cl = (double)(rand()%9999)/9999;
+					double cl = (PRECISION + (double)(rand()%(2*PRECISION)) )/(4*PRECISION);
 					riadok += toString<double>(cl) + " ";
 				}
 				riadok += "1.0";

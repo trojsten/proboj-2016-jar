@@ -23,9 +23,9 @@ static void shutdownHandler (int signum) {
 	signal(signum, SIG_DFL);
   if (getpid() == hlavnyProces && !praveUkoncujem) {
     praveUkoncujem = true;
-    loguj("dostal som ukoncovaci signal %s", strsignal(signum));
+    fprintf(stderr, "dostal som ukoncovaci signal %s\n", strsignal(signum));
     if (cleanupFunkcia) {
-      loguj("volam cleanup funkciu");
+      fprintf(stderr, "volam cleanup funkciu\n");
       cleanupFunkcia();
     }
   }
@@ -36,7 +36,7 @@ static void sigchldHandler (int signum) {
   int pid, status;
   while ((pid = waitpid(-1, &status, WNOHANG)), (pid > 0)) {
     if (WIFSIGNALED(status)) {
-      loguj("proces %d umrel na: %s", pid, strsignal(WTERMSIG(status)) );
+      fprintf(stderr, "proces %d umrel na: %s\n", pid, strsignal(WTERMSIG(status)) );
     }
   }
 }

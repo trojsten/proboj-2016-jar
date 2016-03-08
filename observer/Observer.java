@@ -7,6 +7,7 @@ import struct.*;
 import java.nio.file.*;
 
 import java.awt.*;
+import java.awt.Font;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.SwingUtilities;
@@ -333,6 +334,82 @@ class Timebar extends JComponent {
 	}
 }
 
+class Stats extends JComponent {
+	Stav S;
+	ArrayList<Klient> klienti;
+	String ktoryStat;
+
+	Stats (Stav vzor, ArrayList<Klient> kvzor) {
+		S = vzor;
+		klienti = kvzor;
+		ktoryStat = "populacia";
+		setPreferredSize(new Dimension(1000, 100));
+
+		setFont(new Font("Monospace", Font.BOLD, 11));
+	}
+
+	void zistiStaty (int[] staty) {
+		if (ktoryStat.equals("populacia")) {
+			for (int i=0; i<S.cely.size(); i++) {
+				int vlastnik = S.cely.get(i).vlastnik;
+				if (vlastnik<0 || vlastnik>=staty.length) {
+					continue;
+				}
+				staty[vlastnik] += S.cely.get(i).zistiPop();
+			}
+			for (int i=0; i<S.invPodlaCasu.size(); i++) {
+				ArrayList<Invazia> invy = S.invPodlaCasu.get(i);
+				for (int j=0; j<invy.size(); j++) {
+					int vlastnik = invy.get(j).vlastnik;
+					if (vlastnik<0 || vlastnik>=staty.length) {
+						continue;
+					}
+					staty[vlastnik] += invy.get(j).jednotiek;
+				}
+			}
+			return;
+		}
+	}
+
+	public void paintComponent (Graphics g) {
+		int[] staty = new int[ klienti.size() ];
+		zistiStaty(staty);
+		int maxStat = 1;
+		for (int i=0; i<klienti.size(); i++) {
+			if (staty[i] > maxStat) {
+				maxStat = staty[i];
+			}
+		}
+
+		if (ktoryStat.equals("populacia")) {
+			g.setColor(new Color(0, 32, 0, 255));
+		}
+		else {
+			g.setColor(Color.BLACK);
+		}
+		g.fillRect(0, 0, getWidth(), getHeight());
+
+		int okraj = 10;
+		int hrubka = (getHeight() - 2*okraj) / klienti.size();
+
+		for (int i=0; i<klienti.size(); i++) {
+			int x = okraj;
+			int y = okraj + (getHeight() - 2*okraj)*(1+i) / klienti.size();
+			int dlzka = (getWidth() - 2*okraj)*staty[i] / maxStat;
+			Color cl = klienti.get(i).cl;
+			g.setColor(cl);
+			g.fillRect(x, y-hrubka, dlzka, hrubka);
+		}
+		for (int i=0; i<klienti.size(); i++) {
+			int x = okraj;
+			int y = okraj + (getHeight() - 2*okraj)*(1+2*i) / (2*klienti.size());
+			Color cl = klienti.get(i).cl.darker().darker();
+			g.setColor(cl);
+			g.drawString(klienti.get(i).name, x, y);
+		}
+	}
+}
+
 class Visual extends JComponent {
 	Stav S;
 	ArrayList<Klient> klienti;
@@ -404,6 +481,8 @@ class Visual extends JComponent {
 		mbState = -1;
 		addMouseListener(new pressHandler());
 		addMouseMotionListener(new motionHandler());
+
+		setFont(new Font("Monospace", Font.BOLD, 11));
 	}
 
 	// veci k bunke
@@ -448,6 +527,35 @@ class Visual extends JComponent {
 		g.drawOval(x-maxr, y-maxr, 2*maxr, 2*maxr);
 		g.setColor(fillcl);
 		g.fillOval(x-r, y-r, 2*r, 2*r);
+
+		// vypiseme ciselka == parametre bunky
+		// natvrdo konstanty o pozicii -- nac sa s tym srat
+		Color clutok = new Color(255, 0, 0, 255);
+		Color clobr = new Color(0, 0, 255, 255);
+		Color clsten = new Color(0, 255, 255, 255);
+		Color clrast = new Color(0, 255, 0, 255);
+		Color cltotalobr = new Color(255, 255, 255, 255);
+		float[] hsbvals = new float[3];
+		Color.RGBtoHSB(fillcl.getRed(), fillcl.getGreen(), fillcl.getBlue(), hsbvals);
+		// System.err.format("%d %d %d, %f\n",fillcl.getRed(), fillcl.getGreen(), fillcl.getBlue(), hsbvals[2]);
+		if (hsbvals[2] >= 0.75) {
+			clutok = clutok.darker();
+			clobr = clobr.darker();
+			clsten = clsten.darker();
+			clrast = clrast.darker();
+			cltotalobr = cltotalobr.darker();
+			cltotalobr = cltotalobr.darker();
+		}
+		g.setColor(clutok);
+		g.drawString(Integer.toString(cel.utok), x-15, y-5);
+		g.setColor(clobr);
+		g.drawString(Integer.toString(cel.obrana), x-15, y+15);
+		g.setColor(clsten);
+		g.drawString(Integer.toString(cel.stena), x+5, y-5);
+		g.setColor(clrast);
+		g.drawString(Integer.toString(cel.rast), x+5, y+15);
+		g.setColor(cltotalobr);
+		g.drawString(Integer.toString(cel.def()), x-15, y+5);
 	}
 
 	// veci k invaziam
@@ -480,6 +588,17 @@ class Visual extends JComponent {
 
 		g.setColor(fillcl);
 		g.fillOval(x-r, y-r, 2*r, 2*r);
+
+		// vypiseme ciselka o invazii
+		Color cltotalatk = new Color(255, 255, 255, 255);
+		float[] hsbvals = new float[3];
+		Color.RGBtoHSB(fillcl.getRed(), fillcl.getGreen(), fillcl.getBlue(), hsbvals);
+		if (hsbvals[2] >= 0.75) {
+			cltotalatk = cltotalatk.darker();
+			cltotalatk = cltotalatk.darker();
+		}
+		g.setColor(cltotalatk);
+		g.drawString(Integer.toString(inv.atk()), x-15, y+5);
 	}
 
 
@@ -515,6 +634,7 @@ class Vesmir {
 	JFrame mainFrame;
 	ObStav obs;
 	Visual vis;
+	Stats sts;
 	Timebar timb;
 
 	class keyHandler extends KeyAdapter {
@@ -574,11 +694,13 @@ class Vesmir {
 		obs.advanceTime();
 		vis = new Visual(obs.S, klienti);
 		timb = new Timebar(obs);
+		sts = new Stats(obs.S, klienti);
 		mainFrame = new JFrame("Observer");
 		mainFrame.getContentPane().setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.add(vis);
 		mainFrame.add(timb);
+		mainFrame.add(sts);
 		mainFrame.pack();
 		mainFrame.repaint();
 		mainFrame.setVisible(true);
