@@ -1,9 +1,9 @@
-import java.util.*;
-import java.math.*;
-import java.io.*;
 import common.*;
 import struct.*;
 
+import java.util.*;
+import java.math.*;
+import java.io.*;
 import java.nio.file.*;
 
 import java.awt.*;
