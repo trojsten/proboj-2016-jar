@@ -33,10 +33,10 @@ V koreni proboju spustite `make`, čím všetko skompilujete. (Ak váš klient n
 vnútri `klienti`, nastavte v jeho `Makefile` správny `SERVERDIR` a spustite
 `make` aj v ňom.)
 
-Potom spustite `./server/server zaznamy/01 mapy/mapa1.ppm asdf klienti/vasklient
-klienti/vasklient klienti/hlupy` To spustí hru s troma hráčmi (vaším, druhým
-vaším a hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
-`./server/observer.jar zaznamy/01`. 
+Potom spustite `./server/server zaznamy/01 mapy/test.map asdf klienti/vasklient
+klienti/template klienti/menej_hlupy` To spustí hru s troma hráčmi (vaším, templatom
+a menej_hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
+`./server/observer.jar zaznamy/01`.
 
 Keď server spustíte u vás, je to len na skúšku. Na hlavnom počítači to beží na
 ostro. Je tam aj webové rozhranie, cez ktoré môžete uploadovať vašich klientov.
@@ -86,7 +86,8 @@ cieľového meste. Jednotky, ktoré sa do mesta nezmestia, umrú.
   - Kým sú obe sily väčšie ako 0, náhodne sa pre každú rozhodne, či sa zníži o $1$.
   - Podľa toho, ktorá sila je na konci kladná, sa nastaví vlastník mesta. (Ak sú obe
 nulové, vlastníkom mesta sa stáva neutrál.) Podľa toho, aká časť sily víťazovi
-ostala, sa nastaví aj nová populácia mesta.
+ostala, sa nastaví aj nová populácia mesta. (Presný vzorec nájdete niekde v update.cpp,
+prípadne sa spýtajte.)
 
 Cieľom hry je prežiť dlhšie, ako ostatní (normálni, teda nie neutrálni) hráči.
 
@@ -96,10 +97,21 @@ Ako sa ťahá
 
 Hrá sa real time. To znamená, že keď pošlete ťah, tak sa ťah urobí. To znamená, že môžete vynechať nejaké kolo.
 
+Čo to presne znamená? Klient si môže v ľubovoľnom momente vyžiadať od servera informácie o hre,
+a server mu ich pošle najskôr ako vie. Server ich vie posielať dvomi spôsobmi: buď vám
+pošle celý stav hry, alebo zmeny v stave hry. Váš klient ho vie požiadať o konkrétny
+spôsob prenosu.
+
+To popri inom znamená, že ak sa vám veľmi chce, môžete spraviť nejakého "event-driven"
+bota -- teda by sa vedel rozhodovať podľa nových udalostí. Ak by ste teda chceli nejakého
+takého bota nakódiť, odporúčam pozrieť sa do server/marshal.cpp/dekodujStav .
+
 
 Mapy
 ----
-Mapy sú úplne textové a majú príponu .map .
+Mapy sú úplne textové a majú príponu ".map" . Môžete si vytvárať vlastné mapy pomocou
+nástroja "Leveler" (spustíte ho z probojového adresára ako "leveler/leveler.jar <nazov_mapy>").
+V README.txt sú nejaké stručné pokyny, ako ho používať.
 
 
 

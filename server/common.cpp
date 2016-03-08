@@ -4,6 +4,7 @@
 using namespace std;
 
 #include "common.h"
+#include "update.h"
 
 int velkyCas;
 
@@ -48,9 +49,12 @@ int mesto::zistiPop () {
 		poslCas = velkyCas;
 		return populacia;
 	}
-	populacia += (velkyCas - poslCas)*rast;
+	populacia += ((int)(velkyCas/POMALOST_RASTU) - (int)(poslCas/POMALOST_RASTU))*rast;
 	if (populacia > kapacita) {
 		populacia = kapacita;
+	}
+	if (populacia < 0) {
+		populacia = 0;
 	}
 	poslCas = velkyCas;
 	return populacia;

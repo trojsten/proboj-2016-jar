@@ -51,6 +51,9 @@ public class Bunka
 		if (populacia > kapacita) {
 			populacia = kapacita;
 		}
+		if (populacia < 0) {
+			populacia = 0;
+		}
 		poslCas = Common.velkyCas;
 		return populacia;
 	}
