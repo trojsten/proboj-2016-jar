@@ -225,7 +225,7 @@ void vykonaj (invazia inv, stav& stavHry) {
 		}
 		zost[i] = pow[i] / silaJedneho[i];
 		int zvys = pow[i] % silaJedneho[i];
-		zost[i] += (rand()%povpow[i] < zvys);
+		zost[i] += (rand()%silaJedneho[i] < zvys);
 		if (zost[i] > povjedn[i]) {
 			zost[i] = povjedn[i];
 		}

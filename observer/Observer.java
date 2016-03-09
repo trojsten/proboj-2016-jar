@@ -393,7 +393,6 @@ class Stats extends JComponent {
 
 		int okraj = 10;
 		int hrubka = (getHeight() - 2*okraj) / klienti.size();
-
 		for (int i=0; i<klienti.size(); i++) {
 			int x = okraj;
 			int y = okraj + (getHeight() - 2*okraj)*(1+i) / klienti.size();
@@ -405,7 +404,15 @@ class Stats extends JComponent {
 		for (int i=0; i<klienti.size(); i++) {
 			int x = okraj;
 			int y = okraj + (getHeight() - 2*okraj)*(1+2*i) / (2*klienti.size());
-			Color cl = klienti.get(i).cl.darker().darker();
+			Color cl = klienti.get(i).cl;
+			float[] hsbvals = new float[3];
+			Color.RGBtoHSB(cl.getRed(), cl.getGreen(), cl.getBlue(), hsbvals);
+			if (hsbvals[2] >= 0.75) {
+				cl = cl.darker().darker();
+			}
+			else {
+				cl = cl.brighter().brighter();
+			}
 			g.setColor(cl);
 			g.drawString(klienti.get(i).name, x, y);
 		}
@@ -589,7 +596,9 @@ class Visual extends JComponent {
 			int y = kde.y;
 			int r = 1 + (inv.prichod-S.cas)*maxPolomerBunky(inv.kam)/(inv.prichod-inv.odchod);
 			g.setColor(fillcl);
-			g.drawOval(x-r, y-r, 2*r, 2*r);
+			for (int hrubka=0; hrubka<1; hrubka++) {
+				g.drawOval(x-r-hrubka, y-r-hrubka, 2*(r+hrubka), 2*(r+hrubka));
+			}
 			return;
 		}
 		Color fillcl = Color.GRAY;
