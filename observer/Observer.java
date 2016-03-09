@@ -251,7 +251,7 @@ class ObStav {
 		}
 		catch (NoSuchElementException | IllegalStateException exc) {
 			hrac = -1;
-			delay = 10;
+			delay = Common.TAH_CAS;
 			endOfStream = true;
 		}
 		return asponJeden;

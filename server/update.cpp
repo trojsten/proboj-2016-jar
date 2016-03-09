@@ -57,23 +57,18 @@ struct staty {
 			}
 		}
 	}
-
-	bool koniec () {
-		/*
-		for (unsigned i=0; i<pocZivych.size(); i++) {
-			cout << pocZivych[i] << "," << pocInv[i] << "  ";
-		}
-		cout << "\n";
-		*/
-		// return (zostHracov <= 1) || (cas >= CAS_SMRT*1000/TAH_CAS);
-		return zostHracov <= 1;
-	}
 };
 
+bool doUplnehoKonca;
 staty stats;
 
-void inicializujStaty (unsigned pocHrac,stav& stavHry) {
+bool koniec () {
+	return stats.zostHracov <= (1 - doUplnehoKonca);
+}
+
+void inicializuj (unsigned pocHrac, stav& stavHry, bool cierniRytieri) {
 	stats = staty(pocHrac,stavHry);
+	doUplnehoKonca = cierniRytieri;
 }
 
 void ulozUmrtia (vector<int>& V) {
@@ -292,5 +287,5 @@ bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 	advanceCas(stavHry);
 	pokrac << "cas " << stavHry.cas << "\n";
 	
-	return stats.koniec();
+	return koniec();
 }

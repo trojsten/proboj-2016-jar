@@ -26,7 +26,7 @@
 
 #include "common.h"
 
-void inicializujStaty (unsigned pocHrac, stav& stavHry) ;
+void inicializuj (unsigned pocHrac, stav& stavHry, bool absend) ;
 
 void ulozUmrtia (vector<int>& V) ;
 

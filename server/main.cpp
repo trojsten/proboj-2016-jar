@@ -200,7 +200,10 @@ int main(int argc, char *argv[]) {
 		pocetHracov++;
 	}
 	nacitajMapu(mapAdr, stavHry, pocetHracov);
-	
+
+	// o ciernych rytieroch...
+	bool absend = (strcmp(argv[3],"die")==0);
+
 	// zakoduje pociatocny stav a posle ho
 	// potom pocka chvilu --- cas na predpocitanie
 	stringstream pocStav;
@@ -212,7 +215,7 @@ int main(int argc, char *argv[]) {
 	usleep(CAS_NA_INICIALIZACIU*1000ll);
 
 	long long ltime = gettime();
-	inicializujStaty(pocetHracov,stavHry);
+	inicializuj(pocetHracov, stavHry, absend);
 	
 	bool koncim = false;
 	while (!koncim) {
