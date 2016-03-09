@@ -53,20 +53,32 @@ def get_records():
         id = basename[:-len('.manifest')]
         lines = open(path).readlines()
         manifest = dict(line.rstrip('\n').split('=', 1) for line in lines)
-        
-        maper = {x.split('/')[-1]: i for i,x in enumerate(manifest['clients'].split(','))}
-        
+        manifest['clients'] = manifest['clients'].strip(',')
+        #print id,
+        #print manifest['clients']
+        maper = {x.split('/')[-1]: i for i,x in enumerate(manifest['clients'].strip(' ,').split(','))}
+        #print maper
         times = []
+        pom = 0
+        if 'rank' not in manifest:
+            continue
         for x in manifest['rank'].split(','):
+            #print x
+            pom+=1
             meno = x.split()[0]
             cas =  int(x.split()[1])
-            times.append([cas, maper[meno]])
+            if meno in maper:
+                times.append([cas, maper[meno]])
         random.shuffle(times)
+        #print times
         times = sorted(times, key = lambda x: -x[0])
         realrank = [0]*len(times)
-        consts = [10, 5, 1, 0] + [0]*len(times)
+        consts = [10, 5, 1, 0] + [0]*pom
         for i, x in enumerate(times):
+            #print i,x
+            #print 
             realrank[x[1]] = consts[i]
+        
         manifest['rank'] = ','.join(map(str,realrank))
         records[id] = manifest
     return records
@@ -168,7 +180,7 @@ def upload():
                      u'súbor <code>Makefile</code>.'), 'error')
         return redirect(url_for('index'))
     dir = '../uploady/'+session['login']+'/'
-    basename = time.strftime('%Y-%m-%d-%H-%M-%S.tar.gz')
+    basename = "%s_"%random.randint(0,100000) + time.strftime('%Y-%m-%d-%H-%M-%S.tar.gz')
     request.files['archiv'].save(dir + basename)
     flash(Markup(u'Klient úspešne uložený ako <code>%s</code>.' % basename),
           'success')

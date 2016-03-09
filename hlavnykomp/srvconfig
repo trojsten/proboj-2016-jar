@@ -1,8 +1,15 @@
 
-klienti=( ha hb )
+klienti=( hlupy fljun amazon paulinia perry nulano struze baklazan total)
 mapy=( mapy/*.map )
 nazvy=(
-  'hrac a'
-  'hrac b'
+  'Hlupy'
+  'Fljun'
+  'Amazon'
+  'Paulinia'
+  'Perry'
+  'Nulano'
+  'Styri ruze'
+  'Baklazan'
+  'Total Anihilation'
 )
 
