@@ -1,1 +1,13 @@
-tt
+c=0; 
+kl=( qw erfef wdev dwdwd fee de wd)
+for f in `shuf -e ${kl[@]}` ; 
+do 
+	echo $c
+	echo $f
+	let c+=1; 
+	if [ $c -eq 4 ] 
+	then 
+		break; 
+	fi 
+	echo $c ;  
+done
