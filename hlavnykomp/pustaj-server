@@ -22,7 +22,13 @@ while true; do
   echo "spustam hru na mape $mapa"
 
   buildy=()
-  for klient in "${klienti[@]}"; do
+  counter=0
+  for klient in `shuf -e "${klienti[@]}"`; do
+    let counter+=1
+    if [ $c -eq 4 ] 
+    then
+        break;
+    fi
     najnovsi=`ls hlavnykomp/buildy/$klient/*/.status.ok 2>/dev/null | tail -n1`
     [ -z "$najnovsi" ] && echo "klient $klient nema ziaden ok build!" && exit 1
     buildy+=("${najnovsi%/*}")
