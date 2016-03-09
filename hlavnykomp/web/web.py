@@ -56,21 +56,29 @@ def get_records():
         manifest['clients'] = manifest['clients'].strip(',')
         #print id,
         #print manifest['clients']
-        maper = {x.split('/')[-1]: i for i,x in enumerate(manifest['clients'].strip(' ,').split(','))}
+        maperd = [(x.split('/')[-1], i) for i,x in enumerate(manifest['clients'].strip(' ,').split(','))]
+        maperd += [(x.split('/')[-2]+'/', i) for i,x in enumerate(manifest['clients'].strip(' ,').split(','))]
+        maper = dict(maperd)
+        
         #print maper
         times = []
         pom = 0
         if 'rank' not in manifest:
             continue
+        print "#### maper"
+        print maper
+        print id
         for x in manifest['rank'].split(','):
             #print x
             pom+=1
+            print x
             meno = x.split()[0]
             cas =  int(x.split()[1])
+            print meno
             if meno in maper:
                 times.append([cas, maper[meno]])
         random.shuffle(times)
-        #print times
+        print times
         times = sorted(times, key = lambda x: -x[0])
         realrank = [0]*len(times)
         consts = [10, 5, 1, 0] + [0]*pom
@@ -86,13 +94,21 @@ def get_records():
 
 def get_ranklist():
     ranks = dict((id, 0) for id, title, hash in druzinky)
+    played = dict((id, 0) for id, title, hash in druzinky)
     for id, manifest in get_records().items():
         if manifest['state'] != 'displayed': continue
-        builds = manifest['clients'].split(',')
-        myranks = manifest['rank'].split(',')
+        builds = manifest['clients'].strip(',').split(',')
+        myranks = manifest['rank'].strip(',').split(',')
+        #print id
+        #print manifest['rank']
+        #print builds
+        #print myranks
         for i, build in enumerate(builds):
+            print i, build
             client = build.partition('/')[0]
             ranks[client] += int(myranks[i])
+            played[client] +=1
+    print played
     return sorted(((rank, id) for id, rank in ranks.items()), reverse=True)
 
 
@@ -234,7 +250,7 @@ def records():
         rank = None
         if manifest['state'] == 'displayed':
             rank = [int(r) for r in manifest['rank'].split(',')]
-        clients = map(lambda qq: qq.split('/')[0], manifest['clients'].split(','))
+        clients = map(lambda qq: qq.split('/')[0], manifest['clients'].strip(',').split(','))
         if rank:
             rank = zip(clients,rank)
         data.append(dict(id=id, begin=begin, link=link, map=mapa, state=state,

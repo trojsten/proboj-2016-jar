@@ -1,5 +1,5 @@
 
-klienti=( hlupy fljun amazon paulinia perry nulano struze baklazan total)
+klienti=( hlupy fljun amazon paulinia perry nulano struze baklazan total jobokrki luaro)
 mapy=( mapy/*.map )
 nazvy=(
   'Hlupy'
@@ -11,5 +11,7 @@ nazvy=(
   'Styri ruze'
   'Baklazan'
   'Total Anihilation'
+  'Jobokrki'
+  'Lukas a Roman'
 )
 
