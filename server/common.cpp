@@ -134,12 +134,12 @@ void stav::nastavCas (int t) {
 	velkyCas = t;
 }
 
-void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) {
+bool stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) {
 	// par vojakov vykrocilo lavou nohou...
 	jednotiek = jednotiek*VYTRVALOST_VOJAKOV / 100;
 	jednotiek += (rand()%100 < (jednotiek*VYTRVALOST_VOJAKOV)%100);
 	if (jednotiek == 0) {
-		return;
+		return false;
 	}
 
 	int diff = prichod - cas;
@@ -149,8 +149,9 @@ void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, in
 	mesto* odkial = (od < 0 ? NULL : &mesta[od]);
 	invazia* ptr = new invazia(odchod, prichod, vlastnik, odkial, &mesta[kam], jednotiek);
 	invPodlaCasu[diff].push_back(ptr);
+	return true;
 }
-void stav::nastavInv (invAlt inva) {
+bool stav::nastavInv (invAlt inva) {
 	nastavInv(inva.odchod, inva.prichod, inva.vlastnik, inva.od, inva.kam, inva.jednotiek);
 }
 

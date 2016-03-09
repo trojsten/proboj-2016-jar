@@ -90,8 +90,9 @@ void nastavMesto (int id, int vlastnik, int populacia, stav& stavHry) {
 }
 
 void novaInv (invAlt inva, stav& stavHry) {
-	stats.add(inva.vlastnik, 1);
-	stavHry.nastavInv(inva);
+	if (stavHry.nastavInv(inva)) {
+		stats.add(inva.vlastnik, 1);
+	}
 }
 
 void advanceCas (stav& stavHry) {

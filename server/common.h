@@ -88,8 +88,8 @@ struct stav {
 	void nastavMesto (int id, int vlastnik, int populacia) ;
 	void nastavCas (int t) ;
 
-	void nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) ;
-	void nastavInv (invAlt inv) ;
+	bool nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) ;
+	bool nastavInv (invAlt inv) ;
 
 	static string nazovtyp () ;
 };
