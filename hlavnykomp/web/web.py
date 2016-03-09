@@ -58,6 +58,7 @@ def get_records():
         #print manifest['clients']
         maperd = [(x.split('/')[-1], i) for i,x in enumerate(manifest['clients'].strip(' ,').split(','))]
         maperd += [(x.split('/')[-2]+'/', i) for i,x in enumerate(manifest['clients'].strip(' ,').split(','))]
+        maperd += [(x.split('/')[-2]+'', i) for i,x in enumerate(manifest['clients'].strip(' ,').split(','))]
         maper = dict(maperd)
         
         #print maper
@@ -66,20 +67,20 @@ def get_records():
         if 'rank' not in manifest:
             continue
         print "#### maper"
-        print maper
-        print id
+        #print maper
+        #print id
         for x in manifest['rank'].split(','):
             #print x
             pom+=1
-            print x
+            #print x
             meno = x.split()[0]
             cas =  int(x.split()[1])
             print meno
             if meno in maper:
                 times.append([cas, maper[meno]])
         random.shuffle(times)
-        print times
-        times = sorted(times, key = lambda x: -x[0])
+        #print times
+        times = sorted(times, key = lambda x: [-x[0],x[1]])
         realrank = [0]*len(times)
         consts = [10, 5, 1, 0] + [0]*pom
         for i, x in enumerate(times):
@@ -95,21 +96,35 @@ def get_records():
 def get_ranklist():
     ranks = dict((id, 0) for id, title, hash in druzinky)
     played = dict((id, 0) for id, title, hash in druzinky)
-    for id, manifest in get_records().items():
-        if manifest['state'] != 'displayed': continue
-        builds = manifest['clients'].strip(',').split(',')
-        myranks = manifest['rank'].strip(',').split(',')
-        #print id
-        #print manifest['rank']
-        #print builds
-        #print myranks
-        for i, build in enumerate(builds):
-            print i, build
-            client = build.partition('/')[0]
-            ranks[client] += int(myranks[i])
-            played[client] +=1
-    print played
-    return sorted(((rank, id) for id, rank in ranks.items()), reverse=True)
+    all_records = sorted(get_records().items())
+    print all_records[:2]
+    print all_records[-2:]
+    #print map(lambda x: x[0], all_records)
+    const = 10
+    for i in xrange((len(all_records)-const)):
+        usek = all_records[i*const:(i+1)*const]
+        usek_rank = dict((id, []) for id, title, hash in druzinky)
+        for id, manifest in usek:
+            if manifest['state'] != 'displayed': continue
+            builds = manifest['clients'].strip(',').split(',')
+            myranks = manifest['rank'].strip(',').split(',')
+            #print id
+            #print manifest['rank']
+            #print builds
+            #print myranks
+            for j, build in enumerate(builds):
+                #print i, build
+                client = build.partition('/')[0]
+                usek_rank[client].append(int(myranks[j]))
+        
+        for  hrac,ratingy in usek_rank.items():
+            if len(ratingy)==0:
+                continue
+            usek_mean = ((sum(ratingy)+0.0)/len(ratingy))
+            ranks[hrac]+= usek_mean/ (0.999**i)
+  
+    #print played
+    return sorted(((round(rank,2), id) for id, rank in ranks.items()), reverse=True)
 
 
 def get_uploads(username):
@@ -212,7 +227,7 @@ def uploads():
 @app.route("/uploads/<id>")
 def uploads_download(id):
     if 'login' not in session: abort(403)
-    if not re.match(r'^[-0-9]+\.tar\.gz$', id): abort(404)
+    if not re.match(r'^[-0-9_]+\.tar\.gz$', id): abort(404)
     path = '../uploady/'+session['login']+'/'+id
     if not os.path.isfile(path): abort(404)
     return send_file(path, as_attachment=True)
@@ -268,6 +283,39 @@ def records_download(id):
     path = '../../zaznamy/'+id+'.tar.gz'
     if not os.path.isfile(path): abort(404)
     return send_file(path, as_attachment=True)
+
+@app.route("/mapy")
+def mapy_lister():
+    maps = []
+    for mapname in os.listdir('../../mapy/'):
+      maps.append(mapname)
+    
+    html = ""
+    for mapa in maps:
+        html+='<a href="/mapy/%s">%s</a><br>'%(mapa,mapa)
+    return html
+
+@app.route("/mapy/<id>")
+def serve_map(id):
+    mapbase = '../../mapy/'
+    
+    for mapname in os.listdir(mapbase):
+        if  id==mapname:
+            path = mapbase+id
+            return send_file(path, as_attachment=True)
+            
+    if not os.path.isfile(path): abort(404)
+    
+@app.route("/pvp")
+def listpvp():
+    html = """
+    stiahnite si <a href='/pvp/arena'>pvparenu</a> a akchcete 
+    tak aj <a href='pvp/spellmaper'>spellmaper</a> do rovnakeho adresara
+    potom cez python 2
+    python pvparena
+    """
+    
+    return html
 
 
 @app.route("/docs")
