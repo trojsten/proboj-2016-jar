@@ -345,7 +345,7 @@ class Stats extends JComponent {
 		ktoryStat = "populacia";
 		setPreferredSize(new Dimension(1000, 100));
 
-		setFont(new Font("Monospace", Font.BOLD, 11));
+		setFont(new Font("Monospace", Font.BOLD, 13));
 	}
 
 	void zistiStaty (int[] staty) {
@@ -359,12 +359,14 @@ class Stats extends JComponent {
 			}
 			for (int i=0; i<S.invPodlaCasu.size(); i++) {
 				ArrayList<Invazia> invy = S.invPodlaCasu.get(i);
-				for (int j=0; j<invy.size(); j++) {
-					int vlastnik = invy.get(j).vlastnik;
-					if (vlastnik<0 || vlastnik>=staty.length) {
-						continue;
+				if (invy != null) { // z neznameho dovodu tu mozu byt nullptr? asi nieco paralelne
+					for (int j=0; j<invy.size(); j++) {
+						int vlastnik = invy.get(j).vlastnik;
+						if (vlastnik<0 || vlastnik>=staty.length) {
+							continue;
+						}
+						staty[vlastnik] += invy.get(j).jednotiek;
 					}
-					staty[vlastnik] += invy.get(j).jednotiek;
 				}
 			}
 			return;
@@ -482,7 +484,7 @@ class Visual extends JComponent {
 		addMouseListener(new pressHandler());
 		addMouseMotionListener(new motionHandler());
 
-		setFont(new Font("Monospace", Font.BOLD, 11));
+		setFont(new Font("Monospace", Font.BOLD, 13));
 	}
 
 	// veci k bunke
@@ -547,15 +549,15 @@ class Visual extends JComponent {
 			cltotalobr = cltotalobr.darker();
 		}
 		g.setColor(clutok);
-		g.drawString(Integer.toString(cel.utok), x-15, y-5);
+		g.drawString(Integer.toString(cel.utok), x-18, y-8);
 		g.setColor(clobr);
-		g.drawString(Integer.toString(cel.obrana), x-15, y+15);
+		g.drawString(Integer.toString(cel.obrana), x-18, y+18);
 		g.setColor(clsten);
-		g.drawString(Integer.toString(cel.stena), x+5, y-5);
+		g.drawString(Integer.toString(cel.stena), x+8, y-8);
 		g.setColor(clrast);
-		g.drawString(Integer.toString(cel.rast), x+5, y+15);
+		g.drawString(Integer.toString(cel.rast), x+8, y+18);
 		g.setColor(cltotalobr);
-		g.drawString(Integer.toString(cel.def()), x-15, y+5);
+		g.drawString(Integer.toString(cel.def()), x-18, y+5);
 	}
 
 	// veci k invaziam
@@ -708,8 +710,22 @@ class Vesmir {
 		pridajListenerov();
 	}
 	void hlavnyCyklus () {
+		long koncovyCas = -1;
 		while (true) {
 			long olddate = new Date().getTime();
+
+			// automaticke vypnutie hry po skonceni
+			if ((koncovyCas != -1) && (olddate - koncovyCas > 2000)) {
+				break;
+			}
+			if (obs.historia.hasNext()) {
+				koncovyCas = -1;
+			}
+			else {
+				if (koncovyCas == -1 && obs.endOfStream) {
+					koncovyCas = new Date().getTime();
+				}
+			}
 
 			boolean este = true;
 			while (este && !obs.endOfStream) {
@@ -730,7 +746,7 @@ class Vesmir {
 				while (new Date().getTime() - pred < obs.delay) {
 				}
 			}
-			while (new Date().getTime() - olddate < 10) ;
+			while (new Date().getTime() - olddate < Common.TAH_CAS) ;
 			// mainFrame.repaint(); // tu to dava divne artifakty pri rewindovani, asi preto, ze repaint nie je okamzity
 		}
 	}
@@ -744,6 +760,7 @@ class Vesmir {
 		}
 		init();
 		hlavnyCyklus();
+		System.exit(0);
 	}
 }
 

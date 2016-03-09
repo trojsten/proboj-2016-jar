@@ -84,10 +84,11 @@ cieľového meste. Jednotky, ktoré sa do mesta nezmestia, umrú.
 - Ak je cieľ pod kontrolou iného hráča, odohrá sa bitka. Bitka prebieha nasledovne:
   - Najprv sa určí obranná sila brániaceho sa mesta ako $populacia \cdot obrana + stena$.
   - Tiež sa určí útočná sila útočníkov ako $pocet\ jednotiek \cdot (utok\ zdrojoveho\ mesta)$.
-  - Kým sú obe sily väčšie ako 0, náhodne sa pre každú rozhodne, či sa zníži o $1$.
+  - Kým sú obe sily väčšie ako 0, náhodne sa pre rozhodne, ktorá sa zníži o 1.
   - Podľa toho, ktorá sila je na konci kladná, sa nastaví vlastník mesta. (Ak sú obe
 nulové, vlastníkom mesta sa stáva neutrál.) Podľa toho, aká časť sily víťazovi
-ostala, sa nastaví aj nová populácia mesta.
+ostala, sa nastaví aj nová populácia mesta. (Presný vzorec nájdete niekde v update.cpp,
+prípadne sa spýtajte.)
 
 Cieľom hry je prežiť dlhšie, ako ostatní (normálni, teda nie neutrálni) hráči.
 
@@ -97,11 +98,22 @@ Ako sa ťahá
 
 Hrá sa real time. To znamená, že keď pošlete ťah, tak sa ťah urobí. To znamená, že môžete vynechať nejaké kolo.
 
+Čo to presne znamená? Klient si môže v ľubovoľnom momente vyžiadať od servera informácie o hre,
+a server mu ich pošle najskôr ako vie. Server ich vie posielať dvomi spôsobmi: buď vám
+pošle celý stav hry, alebo zmeny v stave hry. Váš klient ho vie požiadať o konkrétny
+spôsob prenosu.
+
+To popri inom znamená, že ak sa vám veľmi chce, môžete spraviť nejakého "event-driven"
+bota -- teda by sa vedel rozhodovať podľa nových udalostí. Ak by ste teda chceli nejakého
+takého bota nakódiť, odporúčam pozrieť sa do server/marshal.cpp/dekodujStav .
+
 
 Mapy
 ----
-Mapy sú úplne textové a majú príponu .map .
-Ak robite mapu rucne, pokyny su nasledovne: TODO
+
+Mapy sú úplne textové a majú príponu ".map" . Môžete si vytvárať vlastné mapy pomocou
+nástroja "Leveler" (spustíte ho z probojového adresára ako "leveler/leveler.jar <nazov_mapy>").
+V README.txt sú nejaké stručné pokyny, ako ho používať.
 
 Ak ju nerobite rucne a chcete ju robit, chodte za bujom
 

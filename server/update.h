@@ -1,6 +1,10 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
+// herne konstanty
+#define RYCHLOST_JEDNOTIEK 2.0
+#define POMALOST_RASTU 1
+
 #include <string>
 #include <sstream>
 #include <ostream>

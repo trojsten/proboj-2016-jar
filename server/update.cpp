@@ -130,7 +130,7 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	}
 	
 	bod smer = stavHry.mesta[inva.kam].pozicia - stavHry.mesta[inva.od].pozicia;
-	inva.prichod = stavHry.cas + int(ceil(smer.dist()) );
+	inva.prichod = stavHry.cas + int(ceil(smer.dist()/RYCHLOST_JEDNOTIEK) );
 	inva.odchod = stavHry.cas;
 	inva.vlastnik = hrac;
 	return true;
@@ -143,6 +143,7 @@ void vykonaj (invazia inv, stav& stavHry) {
 		return;
 	}
 	int povjedn[2] = {inv.jednotiek, inv.kam->zistiPop()};
+	int silaJedneho[2] = {inv.od->utok, inv.kam->obrana};
 	int povpow[2] = {inv.atk(), inv.def()};
 	int pow[2];
 	for (int i=0; i<2; i++) {
@@ -156,12 +157,17 @@ void vykonaj (invazia inv, stav& stavHry) {
 		nenulovych += (pow[i]>0);
 	}
 	while (nenulovych > 1) {
+		bool ktory = rand()%2;
+		pow[ktory]--;
+		nenulovych -= (pow[ktory]==0);
+		/*
 		int fight = 1 + rand()%3;
 		for (int i=0; i<2; i++) {
 			pow[i] -= fight%2;
 			fight /= 2;
 			nenulovych -= (pow[i]==0);
 		}
+		*/
 	}
 	int zost[2];
 	for (int i=0; i<2; i++) {
@@ -169,9 +175,16 @@ void vykonaj (invazia inv, stav& stavHry) {
 			zost[i] = 0;
 			continue;
 		}
-		zost[i] = povjedn[i]*pow[i] / povpow[i];
-		int zvys = (povjedn[i]*pow[i]) % povpow[i];
+		if (silaJedneho[i] == 0) {
+			zost[i] = (pow[i]>0 ? povjedn[i] : 0);
+			continue;
+		}
+		zost[i] = pow[i] / silaJedneho[i];
+		int zvys = pow[i] % silaJedneho[i];
 		zost[i] += (rand()%povpow[i] < zvys);
+		if (zost[i] > povjedn[i]) {
+			zost[i] = povjedn[i];
+		}
 	}
 	for (int i=0; i<2; i++) {
 		if (zost[i]==0) {
