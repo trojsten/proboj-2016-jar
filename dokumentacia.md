@@ -76,8 +76,8 @@ zvýši o prírastok, pričom nemôže presiahnuť kapacitu mesta. Toto neplatí
 neutrálne mestá.
 
 Hocikedy sa hráč môže rozhodnúť vyslať z niektorého mesta, ktoré kontroluje, ľubovoľný
-počet jednotiek do ľubovoľného iného mesta. Keď vyslané jednotky dôjdu do cieľa,
-môžu sa udiať dve rôzne veci:
+počet jednotiek do ľubovoľného iného mesta. Pocas presunu ale X percent tychto jednotiek umrie.
+Keď vyslané jednotky dôjdu do cieľa, môžu sa udiať dve rôzne veci:
 
 - Ak je cieľ pod kontrolou toho istého hráča, vyslané jednotky sa pridajú k populácii
 cieľového meste. Jednotky, ktoré sa do mesta nezmestia, umrú.
