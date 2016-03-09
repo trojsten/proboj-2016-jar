@@ -4,8 +4,8 @@
 // herne konstanty
 
 // o temnych rytieroch
-#define CAS_SMRT 60 // sekund
-#define CAS_TEMNOTA 90 // sekund
+#define CAS_SMRT 45 // sekund
+#define CAS_TEMNOTA 60 // sekund
 #define POVODNA_PERIODA_TEMNYCH 50 // tahov
 #define POMALOST_TEMNYCH 100 // tahov
 #define JEDNOTIEK_TEMNYCH 50
