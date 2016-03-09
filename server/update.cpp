@@ -65,7 +65,8 @@ struct staty {
 		}
 		cout << "\n";
 		*/
-		return (zostHracov <= 1) || (cas >= CAS_SMRT*1000/TAH_CAS);
+		// return (zostHracov <= 1) || (cas >= CAS_SMRT*1000/TAH_CAS);
+		return zostHracov <= 1;
 	}
 };
 
@@ -106,6 +107,22 @@ void advanceCas (stav& stavHry) {
 /////////////////////////////////////////////////////////////////////
 // cast 2 --- simulovanie hry ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
+
+// THE DARK FORCE ARRIVES
+/*
+int period = POVODNA_PERIODA_TEMNYCH;
+int lastforce = CAS_SMRT*1000/TAH_CAS - period;
+
+void darkForce (stav& stavHry) {
+	
+	if (stavHry.cas < lastforce + period) {
+		return;
+	}
+	
+}
+*/
+
+// THE DARK FORCE LEAVES
 
 bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	if (inva.od<0 || inva.od>=(int)stavHry.mesta.size()) {
@@ -223,6 +240,9 @@ bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 			}
 		}
 	}
+
+	// dark forces arrive
+	// darkForce(stavHry);
 	
 	// odsimuluj invazie, co prave dosli do ciela
 	if (stavHry.invPodlaCasu.size() > 0) {

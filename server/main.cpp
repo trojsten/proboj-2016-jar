@@ -41,10 +41,7 @@ void zabiKlientov() {
 }
 
 bool validchar (char ch) {
-	if (ch>='0' && ch<='9') {
-		return false;
-	}
-	if (ch=='/') {
+	if ((ch>='0' && ch<='9') || (ch=='/') || (ch=='-') || (ch=='_')) {
 		return false;
 	}
 	return true;

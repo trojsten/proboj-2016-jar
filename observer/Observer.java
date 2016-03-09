@@ -654,15 +654,18 @@ class Vesmir {
 				if (key == KeyEvent.VK_SUBTRACT) {
 					obs.delay++;
 				}
+				if (key == KeyEvent.VK_ESCAPE) {
+					System.exit(0);
+				}
 			}
 		}
 	}
 	void pridajListenerov () {
 		// komponentov je malo, robime rucne
 		keyHandler handler = new keyHandler();
-		mainFrame.addKeyListener(handler);
+		// mainFrame.addKeyListener(handler);
 		vis.addKeyListener(handler);
-		timb.addKeyListener(handler);
+		// timb.addKeyListener(handler);
 	}
 	void init () throws IOException {
 		// nacitanie uvodnych dat
@@ -704,6 +707,7 @@ class Vesmir {
 		mainFrame.add(timb);
 		mainFrame.add(sts);
 		mainFrame.pack();
+		vis.requestFocusInWindow();
 		mainFrame.repaint();
 		mainFrame.setVisible(true);
 		
