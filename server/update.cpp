@@ -65,7 +65,7 @@ struct staty {
 		}
 		cout << "\n";
 		*/
-		return (zostHracov <= 1);
+		return (zostHracov <= 1) || (cas >= CAS_SMRT*1000/TAH_CAS);
 	}
 };
 
