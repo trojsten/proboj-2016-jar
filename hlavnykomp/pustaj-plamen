@@ -15,7 +15,7 @@ runmake () {
 
 while true; do
   source ./hlavnykomp/srvconfig
-
+  echo ""
   for klient in "${klienti[@]}"; do
     najnovsi=`ls hlavnykomp/uploady/$klient/*.tar.gz 2>/dev/null | tail -n1`
     [ -z "$najnovsi" ] && echo "klient $klient nic neuploadol!" && continue  #WARNING kedysi tu bol exit

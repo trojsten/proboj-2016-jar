@@ -2,12 +2,15 @@
 
 set -e
 cd "`dirname "$0"`"/..
-lastmap="zaznamy/000040/"
+lastmap="zaznamy/000042"
 while true; do
   sleep 2
   neukazane=`grep -l '^state=displaying$' zaznamy/*.manifest 2>/dev/null | head -n1`
   if [ -z "$neukazane" ]; then
-    ./server/observer.jar $lastmap
+    gz=$lastmap.tag.gz
+    pom=($gz{gz//\// })
+    #echo $pom[1]
+    #./server/observer.jar $lastmap
     sleep 0.5
     continue
   fi

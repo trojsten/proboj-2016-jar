@@ -196,7 +196,7 @@ def upload():
                      u'súbor <code>Makefile</code>.'), 'error')
         return redirect(url_for('index'))
     dir = '../uploady/'+session['login']+'/'
-    basename = "%s_"%random.randint(0,100000) + time.strftime('%Y-%m-%d-%H-%M-%S.tar.gz')
+    basename = time.strftime('%Y-%m-%d-%H-%M-%S')+"_%s_"%random.randint(0,100000)+".tar.gz"
     request.files['archiv'].save(dir + basename)
     flash(Markup(u'Klient úspešne uložený ako <code>%s</code>.' % basename),
           'success')

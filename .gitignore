@@ -2,3 +2,5 @@
 *.d
 *.class
 *.jar
+hlavnycomp/buildy/*
+hlavnycomp/uploady/*
