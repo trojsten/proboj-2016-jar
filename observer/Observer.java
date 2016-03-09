@@ -359,12 +359,14 @@ class Stats extends JComponent {
 			}
 			for (int i=0; i<S.invPodlaCasu.size(); i++) {
 				ArrayList<Invazia> invy = S.invPodlaCasu.get(i);
-				for (int j=0; j<invy.size(); j++) {
-					int vlastnik = invy.get(j).vlastnik;
-					if (vlastnik<0 || vlastnik>=staty.length) {
-						continue;
+				if (invy != null) { // z neznameho dovodu tu mozu byt nullptr? asi nieco paralelne
+					for (int j=0; j<invy.size(); j++) {
+						int vlastnik = invy.get(j).vlastnik;
+						if (vlastnik<0 || vlastnik>=staty.length) {
+							continue;
+						}
+						staty[vlastnik] += invy.get(j).jednotiek;
 					}
-					staty[vlastnik] += invy.get(j).jednotiek;
 				}
 			}
 			return;
@@ -730,7 +732,7 @@ class Vesmir {
 				while (new Date().getTime() - pred < obs.delay) {
 				}
 			}
-			while (new Date().getTime() - olddate < 10) ;
+			while (new Date().getTime() - olddate < Common.TAH_CAS) ;
 			// mainFrame.repaint(); // tu to dava divne artifakty pri rewindovani, asi preto, ze repaint nie je okamzity
 		}
 	}

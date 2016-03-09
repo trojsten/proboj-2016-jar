@@ -20,7 +20,7 @@ using namespace std;
 #define PRECISION 10000
 
 #define MAX_CITAJ 1024
-#define TAH_CAS 10 // v milisekundach
+#define TAH_CAS 20 // v milisekundach
 #define CAS_NA_INICIALIZACIU 2000 // ms
 
 vector<Klient> klienti;

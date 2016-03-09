@@ -2,7 +2,7 @@
 #define UPDATE_H
 
 // herne konstanty
-#define RYCHLOST_JEDNOTIEK 1.0
+#define RYCHLOST_JEDNOTIEK 2.0
 #define POMALOST_RASTU 1
 
 #include <string>
