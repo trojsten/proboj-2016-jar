@@ -159,6 +159,7 @@ void vykonaj (invazia inv, stav& stavHry) {
 	while (nenulovych > 1) {
 		bool ktory = rand()%2;
 		pow[ktory]--;
+		nenulovych -= (pow[ktory]==0);
 		/*
 		int fight = 1 + rand()%3;
 		for (int i=0; i<2; i++) {

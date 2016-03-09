@@ -732,7 +732,7 @@ class Vesmir {
 				while (new Date().getTime() - pred < obs.delay) {
 				}
 			}
-			while (new Date().getTime() - olddate < 10) ;
+			while (new Date().getTime() - olddate < Common.TAH_CAS) ;
 			// mainFrame.repaint(); // tu to dava divne artifakty pri rewindovani, asi preto, ze repaint nie je okamzity
 		}
 	}
