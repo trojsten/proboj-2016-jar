@@ -23,9 +23,9 @@ while true; do
 
   buildy=()
   counter=0
-  for klient in `shuf -e "${klienti[@]}"`; do
+  for klient in `shuf -e ${klienti[@]}`; do
     let counter+=1
-    if [ $c -eq 4 ] 
+    if [ $counter -eq 4 ] 
     then
         break;
     fi
