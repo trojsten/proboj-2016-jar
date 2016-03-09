@@ -33,10 +33,11 @@ V koreni proboju spustite `make`, čím všetko skompilujete. (Ak váš klient n
 vnútri `klienti`, nastavte v jeho `Makefile` správny `SERVERDIR` a spustite
 `make` aj v ňom.)
 
-Potom spustite `./server/server zaznamy/01 mapy/test.map asdf klienti/vasklient
-klienti/template klienti/menej_hlupy` To spustí hru s troma hráčmi (vaším, templatom
-a menej_hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
-`./server/observer.jar zaznamy/01`.
+Potom spustite `./server/server zaznamy/01 mapy/mapa1.map asdf klienti/vasklient
+klienti/vasklient klienti/hlupy` To spustí hru s troma hráčmi (vaším, druhým
+vaším a hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
+`./server/observer.jar zaznamy/01`. Ak sa vam neda pustit observer hentak, skuste 
+`java -classpath observer Observer zaznamy/01`.
 
 Keď server spustíte u vás, je to len na skúšku. Na hlavnom počítači to beží na
 ostro. Je tam aj webové rozhranie, cez ktoré môžete uploadovať vašich klientov.
@@ -83,7 +84,7 @@ cieľového meste. Jednotky, ktoré sa do mesta nezmestia, umrú.
 - Ak je cieľ pod kontrolou iného hráča, odohrá sa bitka. Bitka prebieha nasledovne:
   - Najprv sa určí obranná sila brániaceho sa mesta ako $populacia \cdot obrana + stena$.
   - Tiež sa určí útočná sila útočníkov ako $pocet\ jednotiek \cdot (utok\ zdrojoveho\ mesta)$.
-  - Kým sú obe sily väčšie ako 0, náhodne sa pre každú rozhodne, či sa zníži o $1$.
+  - Kým sú obe sily väčšie ako 0, náhodne sa pre rozhodne, ktorá sa zníži o 1.
   - Podľa toho, ktorá sila je na konci kladná, sa nastaví vlastník mesta. (Ak sú obe
 nulové, vlastníkom mesta sa stáva neutrál.) Podľa toho, aká časť sily víťazovi
 ostala, sa nastaví aj nová populácia mesta. (Presný vzorec nájdete niekde v update.cpp,
@@ -109,9 +110,11 @@ takého bota nakódiť, odporúčam pozrieť sa do server/marshal.cpp/dekodujSta
 
 Mapy
 ----
+
 Mapy sú úplne textové a majú príponu ".map" . Môžete si vytvárať vlastné mapy pomocou
 nástroja "Leveler" (spustíte ho z probojového adresára ako "leveler/leveler.jar <nazov_mapy>").
 V README.txt sú nejaké stručné pokyny, ako ho používať.
 
+Ak ju nerobite rucne a chcete ju robit, chodte za bujom
 
 

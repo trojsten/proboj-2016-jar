@@ -21,7 +21,7 @@ import random
 
 app = Flask(__name__)
 app.config.from_pyfile('../webconfig')
-if os.getenv('FLASK_DEBUG'): app.debug = True
+if os.getenv('FLASK_DEBUG'): app.debug = False
 
 if not app.debug:
     import sys
@@ -250,5 +250,5 @@ def docs():
 
 
 if __name__ == '__main__':
-    app.run(host=('0.0.0.0' if os.getenv('FLASK_PUBLIC') else '127.0.0.1'))
+    app.run(host=('0.0.0.0' if os.getenv('FLASK_PUBLIC') else '127.0.0.1'), threaded=True)
 
