@@ -195,7 +195,7 @@ class ObStav {
 
 	ObStav () {
 		hrac = -1;
-		delay = 10;
+		delay = Common.TAH_CAS;
 		paused = false;
 		endOfStream = false;
 		S = new Stav();
