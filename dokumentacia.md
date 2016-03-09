@@ -33,10 +33,11 @@ V koreni proboju spustite `make`, čím všetko skompilujete. (Ak váš klient n
 vnútri `klienti`, nastavte v jeho `Makefile` správny `SERVERDIR` a spustite
 `make` aj v ňom.)
 
-Potom spustite `./server/server zaznamy/01 mapy/mapa1.ppm asdf klienti/vasklient
+Potom spustite `./server/server zaznamy/01 mapy/mapa1.map asdf klienti/vasklient
 klienti/vasklient klienti/hlupy` To spustí hru s troma hráčmi (vaším, druhým
 vaším a hlúpym) a uloží záznam do `zaznamy/01`. Ten si môžete pozrieť s príkazom
-`./server/observer.jar zaznamy/01`. 
+`./server/observer.jar zaznamy/01`. Ak sa vam neda pustit observer hentak, skuste 
+`java -classpath observer Observer zaznamy/01`.
 
 Keď server spustíte u vás, je to len na skúšku. Na hlavnom počítači to beží na
 ostro. Je tam aj webové rozhranie, cez ktoré môžete uploadovať vašich klientov.
@@ -100,6 +101,8 @@ Hrá sa real time. To znamená, že keď pošlete ťah, tak sa ťah urobí. To z
 Mapy
 ----
 Mapy sú úplne textové a majú príponu .map .
+Ak robite mapu rucne, pokyny su nasledovne: TODO
 
+Ak ju nerobite rucne a chcete ju robit, chodte za bujom
 
 
