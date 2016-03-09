@@ -17,6 +17,7 @@ from flask import (abort, flash, Flask, make_response, redirect, url_for,
 from jinja2 import Markup
 from hashlib import sha1
 from markdown import markdown
+import random
 
 app = Flask(__name__)
 app.config.from_pyfile('../webconfig')
@@ -52,6 +53,21 @@ def get_records():
         id = basename[:-len('.manifest')]
         lines = open(path).readlines()
         manifest = dict(line.rstrip('\n').split('=', 1) for line in lines)
+        
+        maper = {x.split('/')[-1]: i for i,x in enumerate(manifest['clients'].split(','))}
+        
+        times = []
+        for x in manifest['rank'].split(','):
+            meno = x.split()[0]
+            cas =  int(x.split()[1])
+            times.append([cas, maper[meno]])
+        random.shuffle(times)
+        times = sorted(times, key = lambda x: -x[0])
+        realrank = [0]*len(times)
+        consts = [10, 5, 1, 0] + [0]*len(times)
+        for i, x in enumerate(times):
+            realrank[x[1]] = consts[i]
+        manifest['rank'] = ','.join(map(str,realrank))
         records[id] = manifest
     return records
 
@@ -201,12 +217,15 @@ def records():
         link = None
         if manifest['state'] == 'displayed' and os.path.isfile(path):
             link = url_for('records_download', id=id+'.tar.gz')
-        map = manifest['map'].replace('mapy/', '')
+        mapa = manifest['map'].replace('mapy/', '')
         state = state_captions[manifest['state']]
         rank = None
         if manifest['state'] == 'displayed':
             rank = [int(r) for r in manifest['rank'].split(',')]
-        data.append(dict(id=id, begin=begin, link=link, map=map, state=state,
+        clients = map(lambda qq: qq.split('/')[0], manifest['clients'].split(','))
+        if rank:
+            rank = zip(clients,rank)
+        data.append(dict(id=id, begin=begin, link=link, map=mapa, state=state,
             rank=rank))
     return render_template('records.html', records=data)
 
