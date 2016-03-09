@@ -2,9 +2,14 @@
 #define UPDATE_H
 
 // herne konstanty
+
+// o temnych rytieroch
 #define CAS_SMRT 60 // sekund
-#define CAS_TEMNOTA 90 // sekund
+#define CAS_TEMNOTA 30 // sekund
 #define POVODNA_PERIODA_TEMNYCH 50 // tahov
+#define POMALOST_TEMNYCH 100 // tahov
+#define JEDNOTIEK_TEMNYCH 50
+#define UTOK_TEMNYCH 9
 
 #define VYTRVALOST_VOJAKOV 95 // zo 100
 #define RYCHLOST_JEDNOTIEK 2.0

@@ -41,11 +41,14 @@ double bod::dist () const {
 	return sqrt((double)x*x + (double)y*y);
 }
 
+int bod::casCestovania () const {
+	return int(ceil(dist()/RYCHLOST_JEDNOTIEK) );
+}
 
 mesto::mesto () {}
 
 int mesto::zistiPop () {
-	if (vlastnik == -1) {
+	if (vlastnik < 0) {
 		poslCas = velkyCas;
 		return populacia;
 	}
@@ -71,7 +74,8 @@ invazia::invazia (int odch, int prich, int vlast, mesto* odkial, mesto* kamze, i
 	: odchod(odch), prichod(prich), vlastnik(vlast), od(odkial), kam(kamze), jednotiek(jedn) {}
 
 int invazia::atk () {
-	return jednotiek * od->utok;
+	int utok = (vlastnik < 0 ? UTOK_TEMNYCH : od->utok);
+	return jednotiek * utok;
 }
 
 int invazia::def () {
@@ -84,8 +88,14 @@ invAlt::invAlt () {}
 invAlt::invAlt (int odch, int prich, int vlast, int odkial, int kamze, int jedn)
 	: odchod(odch), prichod(prich), vlastnik(vlast), od(odkial), kam(kamze), jednotiek(jedn) {}
 
-invAlt::invAlt (invazia inv)
-	: invAlt(inv.odchod, inv.prichod, inv.vlastnik, inv.od->id, inv.kam->id, inv.jednotiek) {}
+invAlt::invAlt (invazia inv) {
+	odchod = inv.odchod;
+	prichod = inv.prichod;
+	vlastnik = inv.vlastnik;
+	od = (inv.od == NULL ? -2 : inv.od->id);
+	kam = inv.kam->id;
+	jednotiek = inv.jednotiek;
+}
 
 
 stav::stav () {
@@ -117,6 +127,9 @@ void stav::nastavCas (int t) {
 		}
 		invPodlaCasu.pop_front();
 	}
+	if (invPodlaCasu.empty()) { // aby nebolo prazdne a nedostavali decka EXC za pristupovanie ku front
+		invPodlaCasu.push_back(vector<invazia*>());
+	}
 	cas = t;
 	velkyCas = t;
 }
@@ -130,7 +143,8 @@ void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, in
 	while ((int)invPodlaCasu.size() <= diff) {
 		invPodlaCasu.push_back(vector<invazia*>());
 	}
-	invazia* ptr = new invazia(odchod, prichod, vlastnik, &mesta[od], &mesta[kam], jednotiek);
+	mesto* odkial = (od < 0 ? NULL : &mesta[od]);
+	invazia* ptr = new invazia(odchod, prichod, vlastnik, odkial, &mesta[kam], jednotiek);
 	invPodlaCasu[diff].push_back(ptr);
 }
 void stav::nastavInv (invAlt inva) {
