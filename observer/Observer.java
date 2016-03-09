@@ -726,6 +726,7 @@ class Vesmir {
 		timb = new Timebar(obs);
 		sts = new Stats(obs.S, klienti);
 		mainFrame = new JFrame("Observer");
+		mainFrame.setBounds(1500,200,200,200);
 		mainFrame.getContentPane().setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.add(vis);

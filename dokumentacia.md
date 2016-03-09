@@ -111,6 +111,7 @@ takého bota nakódiť, odporúčam pozrieť sa do server/marshal.cpp/dekodujSta
 Mapy
 ----
 
+
 Mapy sú úplne textové a majú príponu ".map" . Môžete si vytvárať vlastné mapy pomocou
 nástroja "Leveler" (spustíte ho z probojového adresára ako "leveler/leveler.jar <nazov_mapy>").
 V README.txt sú nejaké stručné pokyny, ako ho používať.
