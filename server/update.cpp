@@ -110,23 +110,21 @@ void advanceCas (stav& stavHry) {
 /////////////////////////////////////////////////////////////////////
 
 // THE DARK FORCE ARRIVES
-int period = POVODNA_PERIODA_TEMNYCH;
-int lastforce = CAS_SMRT*1000/TAH_CAS - period;
+int lastforce = CAS_SMRT*1000/TAH_CAS;
 
 void darkForce (stav& stavHry, stringstream& pokrac) {
-	{
-		int lt = CAS_SMRT*1000/TAH_CAS;
-		int rt = CAS_TEMNOTA*1000/TAH_CAS;
-		if (stavHry.cas>=lt && stavHry.cas<=rt) {
-			period = 1 + (rt-stavHry.cas)*(POVODNA_PERIODA_TEMNYCH-1) / (rt-lt);
-		}
-	}
-	// cerr << stavHry.cas << " lastforce=" << lastforce << ", period=" << period << "\n";
-	if (stavHry.cas < lastforce + period) {
+	if (stavHry.cas < lastforce) {
 		return;
 	}
-	// cerr << "invazie temnych!!!\n";
-	lastforce = stavHry.cas;
+
+	int perioda;
+	{
+		int lt = CAS_SMRT*1000/TAH_CAS;
+		int kadencia = 1 + (stavHry.cas - lt) / (CYKLUS_TEMNEJ_KADENCIE*1000/TAH_CAS);
+		perioda = POVODNY_CYKLUS_TEMNYCH*1000 / TAH_CAS / kadencia;
+	}
+	lastforce += perioda;
+
 	vector<vector<unsigned> > mestaByOwner;
 	for (unsigned i=0; i<stavHry.mesta.size(); i++) {
 		int vlastnik = stavHry.mesta[i].vlastnik;
@@ -148,7 +146,6 @@ void darkForce (stav& stavHry, stringstream& pokrac) {
 		novaInv(inva,stavHry);
 		koduj(pokrac,inva);
 	}
-	lastforce = stavHry.cas;
 }
 // THE DARK FORCES... LEAVE
 

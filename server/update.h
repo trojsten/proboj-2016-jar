@@ -5,8 +5,8 @@
 
 // o temnych rytieroch
 #define CAS_SMRT 45 // sekund
-#define CAS_TEMNOTA 60 // sekund
-#define POVODNA_PERIODA_TEMNYCH 50 // tahov
+#define CYKLUS_TEMNEJ_KADENCIE 4 // sekund
+#define POVODNY_CYKLUS_TEMNYCH 1 // sekund
 #define POMALOST_TEMNYCH 100 // tahov
 #define JEDNOTIEK_TEMNYCH 50
 #define UTOK_TEMNYCH 9

@@ -407,7 +407,7 @@ class Stats extends JComponent {
 			Color cl = klienti.get(i).cl;
 			float[] hsbvals = new float[3];
 			Color.RGBtoHSB(cl.getRed(), cl.getGreen(), cl.getBlue(), hsbvals);
-			if (hsbvals[2] >= 0.95) {
+			if (hsbvals[2] >= 0.85) {
 				cl = cl.darker().darker();
 			}
 			else {
@@ -551,7 +551,7 @@ class Visual extends JComponent {
 		float[] hsbvals = new float[3];
 		Color.RGBtoHSB(fillcl.getRed(), fillcl.getGreen(), fillcl.getBlue(), hsbvals);
 		// System.err.format("%d %d %d, %f\n",fillcl.getRed(), fillcl.getGreen(), fillcl.getBlue(), hsbvals[2]);
-		if (hsbvals[2] >= 0.95) {
+		if (hsbvals[2] >= 0.85) {
 			clutok = clutok.darker();
 			clobr = clobr.darker();
 			clsten = clsten.darker();
