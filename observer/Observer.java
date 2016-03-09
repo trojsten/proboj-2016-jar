@@ -596,7 +596,7 @@ class Visual extends JComponent {
 			int y = kde.y;
 			int r = 1 + (inv.prichod-S.cas)*maxPolomerBunky(inv.kam)/(inv.prichod-inv.odchod);
 			g.setColor(fillcl);
-			for (int hrubka=0; hrubka<1; hrubka++) { // just in case i change my mind
+			for (int hrubka=0; hrubka<1; hrubka++) {
 				g.drawOval(x-r-hrubka, y-r-hrubka, 2*(r+hrubka), 2*(r+hrubka));
 			}
 			return;

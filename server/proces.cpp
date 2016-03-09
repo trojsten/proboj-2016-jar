@@ -102,7 +102,7 @@ void Proces::restartuj () {
     dup2(parent2child[0], 0);
     dup2(child2parent[1], 1);
     if (!(errfile == "")) {
-      int errfd = open(errfile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+      int errfd = open(errfile.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
       if (errfd == -1) {
         fprintf(stderr, "restartuj/child/open: pid %d: %s\n", pid, strerror(errno));
       }

@@ -138,6 +138,9 @@ void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, in
 	// par vojakov vykrocilo lavou nohou...
 	jednotiek = jednotiek*VYTRVALOST_VOJAKOV / 100;
 	jednotiek += (rand()%100 < (jednotiek*VYTRVALOST_VOJAKOV)%100);
+	if (jednotiek == 0) {
+		return;
+	}
 
 	int diff = prichod - cas;
 	while ((int)invPodlaCasu.size() <= diff) {
