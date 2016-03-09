@@ -83,7 +83,7 @@ cieľového meste. Jednotky, ktoré sa do mesta nezmestia, umrú.
 - Ak je cieľ pod kontrolou iného hráča, odohrá sa bitka. Bitka prebieha nasledovne:
   - Najprv sa určí obranná sila brániaceho sa mesta ako $populacia \cdot obrana + stena$.
   - Tiež sa určí útočná sila útočníkov ako $pocet\ jednotiek \cdot (utok\ zdrojoveho\ mesta)$.
-  - Kým sú obe sily väčšie ako 0, náhodne sa pre každú rozhodne, či sa zníži o $1$.
+  - Kým sú obe sily väčšie ako 0, náhodne sa pre rozhodne, ktorá sa zníži o 1.
   - Podľa toho, ktorá sila je na konci kladná, sa nastaví vlastník mesta. (Ak sú obe
 nulové, vlastníkom mesta sa stáva neutrál.) Podľa toho, aká časť sily víťazovi
 ostala, sa nastaví aj nová populácia mesta. (Presný vzorec nájdete niekde v update.cpp,

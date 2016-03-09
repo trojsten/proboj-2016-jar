@@ -710,8 +710,22 @@ class Vesmir {
 		pridajListenerov();
 	}
 	void hlavnyCyklus () {
+		long koncovyCas = -1;
 		while (true) {
 			long olddate = new Date().getTime();
+
+			// automaticke vypnutie hry po skonceni
+			if ((koncovyCas != -1) && (olddate - koncovyCas > 2000)) {
+				break;
+			}
+			if (obs.historia.hasNext()) {
+				koncovyCas = -1;
+			}
+			else {
+				if (koncovyCas == -1 && obs.endOfStream) {
+					koncovyCas = new Date().getTime();
+				}
+			}
 
 			boolean este = true;
 			while (este && !obs.endOfStream) {
@@ -746,6 +760,7 @@ class Vesmir {
 		}
 		init();
 		hlavnyCyklus();
+		System.exit(0);
 	}
 }
 
