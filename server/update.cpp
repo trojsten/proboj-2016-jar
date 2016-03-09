@@ -130,7 +130,7 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	}
 	
 	bod smer = stavHry.mesta[inva.kam].pozicia - stavHry.mesta[inva.od].pozicia;
-	inva.prichod = stavHry.cas + int(ceil(smer.dist()*RYCHLOST_JEDNOTIEK) );
+	inva.prichod = stavHry.cas + int(ceil(smer.dist()/RYCHLOST_JEDNOTIEK) );
 	inva.odchod = stavHry.cas;
 	inva.vlastnik = hrac;
 	return true;
@@ -157,12 +157,16 @@ void vykonaj (invazia inv, stav& stavHry) {
 		nenulovych += (pow[i]>0);
 	}
 	while (nenulovych > 1) {
+		bool ktory = rand()%2;
+		pow[ktory]--;
+		/*
 		int fight = 1 + rand()%3;
 		for (int i=0; i<2; i++) {
 			pow[i] -= fight%2;
 			fight /= 2;
 			nenulovych -= (pow[i]==0);
 		}
+		*/
 	}
 	int zost[2];
 	for (int i=0; i<2; i++) {
