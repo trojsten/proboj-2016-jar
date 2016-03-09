@@ -2,8 +2,14 @@
 #define UPDATE_H
 
 // herne konstanty
+#define CAS_SMRT 60 // sekund
+#define VYTRVALOST_VOJAKOV 95 // zo 100
 #define RYCHLOST_JEDNOTIEK 2.0
 #define POMALOST_RASTU 1
+
+// hlavne server-side konstanty
+#define TAH_CAS 20 // v milisekundach
+#define CAS_NA_INICIALIZACIU 2000 // ms
 
 #include <string>
 #include <sstream>

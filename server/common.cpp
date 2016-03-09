@@ -122,6 +122,10 @@ void stav::nastavCas (int t) {
 }
 
 void stav::nastavInv (int odchod, int prichod, int vlastnik, int od, int kam, int jednotiek) {
+	// par vojakov vykrocilo lavou nohou...
+	jednotiek = jednotiek*VYTRVALOST_VOJAKOV / 100;
+	jednotiek += (rand()%100 < (jednotiek*VYTRVALOST_VOJAKOV)%100);
+
 	int diff = prichod - cas;
 	while ((int)invPodlaCasu.size() <= diff) {
 		invPodlaCasu.push_back(vector<invazia*>());

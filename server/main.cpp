@@ -18,10 +18,7 @@ using namespace std;
 #include "marshal.h"
 
 #define PRECISION 10000
-
 #define MAX_CITAJ 1024
-#define TAH_CAS 20 // v milisekundach
-#define CAS_NA_INICIALIZACIU 2000 // ms
 
 vector<Klient> klienti;
 vector<unsigned> kposy;
@@ -41,6 +38,16 @@ void zabiKlientov() {
 		}
 		klienti[i].zabi();
 	}
+}
+
+bool validchar (char ch) {
+	if (ch>='0' && ch<='9') {
+		return false;
+	}
+	if (ch=='/') {
+		return false;
+	}
+	return true;
 }
 
 void odpovedaj (unsigned k, stringstream& ss, string& resetAns) {
@@ -120,11 +127,16 @@ int main(int argc, char *argv[]) {
 		for (int i=4; i<argc; i++) {
 			string klientAdr(argv[i]);
 			// meno klienta je cast za poslednym /, za ktorym nieco je
-			int j = (int)klientAdr.size() - 1;
-			while (j>0 && klientAdr[j-1]!='/') {
-				j--;
+			int r = (int)klientAdr.size() - 1;
+			while (r>0 && !validchar(klientAdr[r-1])) {
+				r--;
 			}
-			string meno = klientAdr.substr(j);
+			r++;
+			int l = r - 1;
+			while (l>0 && klientAdr[l-1]!='/') {
+				l--;
+			}
+			string meno = klientAdr.substr(l, r-l);
 			bool dajNahodnuFarbu = false;
 			while (uzMena.count(meno)) {
 				dajNahodnuFarbu = true;
@@ -194,7 +206,7 @@ int main(int argc, char *argv[]) {
 	// potom pocka chvilu --- cas na predpocitanie
 	stringstream pocStav;
 	koduj(pocStav, stavAlt(stavHry));
-	observationstream << pocStav.str();
+	observationstream << pocStav.str() << flush;
 	for (unsigned k=0; k<klienti.size(); k++) {
 		klienti[k].posli(pocStav.str() + "end\n");
 	}
@@ -231,7 +243,7 @@ int main(int argc, char *argv[]) {
 		}
 		historia += pokracovanieHistorie.str();
 
-		observationstream << pokracovanieHistorie.str();
+		observationstream << pokracovanieHistorie.str() << flush;
 	}
 	
 	// cleanup
@@ -248,6 +260,9 @@ int main(int argc, char *argv[]) {
 	}
 	rankstream.close();
 	checkOstream(rankstream, zaznAdr+"/rank");
+
+	// +- info o dlzke hry
+	loguj("");
 
   return 0;
 }
