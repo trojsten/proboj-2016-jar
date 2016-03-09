@@ -26,7 +26,12 @@ public class InvAlt
 		odchod = inv.odchod;
 		prichod = inv.prichod;
 		vlastnik = inv.vlastnik;
-		od = inv.od.id;
+		if (inv.od == null) {
+			od = -1;
+		}
+		else {
+			od = inv.od.id;
+		}
 		kam = inv.kam.id;
 		jednotiek = inv.jednotiek;
 	}

@@ -521,6 +521,10 @@ class Visual extends JComponent {
 		if (vlastnik >= 0) {
 			fillcl = klienti.get(vlastnik).cl;
 		}
+		else
+		if (vlastnik == -2) {
+			fillcl = new Color(92, 0, 92, 255);
+		}
 		int x = cel.pozicia.x;
 		int y = cel.pozicia.y;
 		int maxr = maxPolomerBunky(cel);
@@ -578,6 +582,16 @@ class Visual extends JComponent {
 	}
 	void nakresliInv (Invazia inv, Graphics g) {
 		int vlastnik = inv.vlastnik;
+		if (vlastnik == -2) { // temni rytieri nie su v ziadnom pripade normalny pripad!!!
+			Color fillcl = new Color(92, 0, 92, 255);
+			Bod kde = inv.kam.pozicia;
+			int x = kde.x;
+			int y = kde.y;
+			int r = 1 + (inv.prichod-S.cas)*maxPolomerBunky(inv.kam)/(inv.prichod-inv.odchod);
+			g.setColor(fillcl);
+			g.drawOval(x-r, y-r, 2*r, 2*r);
+			return;
+		}
 		Color fillcl = Color.GRAY;
 		if (vlastnik >= 0) {
 			fillcl = klienti.get(vlastnik).cl;
@@ -591,6 +605,7 @@ class Visual extends JComponent {
 		g.setColor(fillcl);
 		g.fillOval(x-r, y-r, 2*r, 2*r);
 
+		/*
 		// vypiseme ciselka o invazii
 		Color cltotalatk = new Color(255, 255, 255, 255);
 		float[] hsbvals = new float[3];
@@ -601,6 +616,7 @@ class Visual extends JComponent {
 		}
 		g.setColor(cltotalatk);
 		g.drawString(Integer.toString(inv.atk()), x-15, y+5);
+		*/
 	}
 
 
@@ -719,7 +735,7 @@ class Vesmir {
 			long olddate = new Date().getTime();
 
 			// automaticke vypnutie hry po skonceni
-			if ((koncovyCas != -1) && (olddate - koncovyCas > 2000)) {
+			if ((koncovyCas != -1) && (olddate - koncovyCas > 3000) && !obs.paused) {
 				break;
 			}
 			if (obs.historia.hasNext()) {

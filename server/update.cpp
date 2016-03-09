@@ -109,20 +109,47 @@ void advanceCas (stav& stavHry) {
 /////////////////////////////////////////////////////////////////////
 
 // THE DARK FORCE ARRIVES
-/*
 int period = POVODNA_PERIODA_TEMNYCH;
 int lastforce = CAS_SMRT*1000/TAH_CAS - period;
 
-void darkForce (stav& stavHry) {
-	
+void darkForce (stav& stavHry, stringstream& pokrac) {
+	{
+		int lt = CAS_SMRT*1000/TAH_CAS;
+		int rt = CAS_TEMNOTA*1000/TAH_CAS;
+		if (stavHry.cas>=lt && stavHry.cas<=rt) {
+			period = 1 + (rt-stavHry.cas)*(POVODNA_PERIODA_TEMNYCH-1) / (rt-lt);
+		}
+	}
+	// cerr << stavHry.cas << " lastforce=" << lastforce << ", period=" << period << "\n";
 	if (stavHry.cas < lastforce + period) {
 		return;
 	}
-	
+	// cerr << "invazie temnych!!!\n";
+	lastforce = stavHry.cas;
+	vector<vector<unsigned> > mestaByOwner;
+	for (unsigned i=0; i<stavHry.mesta.size(); i++) {
+		int vlastnik = stavHry.mesta[i].vlastnik;
+		if (vlastnik < 0) {
+			continue;
+		}
+		while (vlastnik >= (int)mestaByOwner.size()) {
+			mestaByOwner.push_back(vector<unsigned>());
+		}
+		mestaByOwner[vlastnik].push_back(i);
+	}
+	for (unsigned i=0; i<mestaByOwner.size(); i++) {
+		if (mestaByOwner[i].empty()) {
+			continue;
+		}
+		int ktory = rand() % mestaByOwner[i].size();
+		ktory = mestaByOwner[i][ktory];
+		invAlt inva(stavHry.cas, stavHry.cas + POMALOST_TEMNYCH, -2, -1, ktory, JEDNOTIEK_TEMNYCH);
+		novaInv(inva,stavHry);
+		koduj(pokrac,inva);
+	}
+	lastforce = stavHry.cas;
 }
-*/
-
-// THE DARK FORCE LEAVES
+// THE DARK FORCES... LEAVE
 
 bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	if (inva.od<0 || inva.od>=(int)stavHry.mesta.size()) {
@@ -147,7 +174,7 @@ bool oprav (invAlt& inva, int hrac, stav& stavHry) {
 	}
 	
 	bod smer = stavHry.mesta[inva.kam].pozicia - stavHry.mesta[inva.od].pozicia;
-	inva.prichod = stavHry.cas + int(ceil(smer.dist()/RYCHLOST_JEDNOTIEK) );
+	inva.prichod = stavHry.cas + smer.casCestovania();
 	inva.odchod = stavHry.cas;
 	inva.vlastnik = hrac;
 	return true;
@@ -160,7 +187,7 @@ void vykonaj (invazia inv, stav& stavHry) {
 		return;
 	}
 	int povjedn[2] = {inv.jednotiek, inv.kam->zistiPop()};
-	int silaJedneho[2] = {inv.od->utok, inv.kam->obrana};
+	int silaJedneho[2] = { (inv.od == NULL ? UTOK_TEMNYCH : inv.od->utok), inv.kam->obrana};
 	int povpow[2] = {inv.atk(), inv.def()};
 	int pow[2];
 	for (int i=0; i<2; i++) {
@@ -242,7 +269,7 @@ bool odsimulujKolo (stav& stavHry, const vector<string>& odpovede, stringstream&
 	}
 
 	// dark forces arrive
-	// darkForce(stavHry);
+	darkForce(stavHry, pokrac);
 	
 	// odsimuluj invazie, co prave dosli do ciela
 	if (stavHry.invPodlaCasu.size() > 0) {

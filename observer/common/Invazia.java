@@ -30,7 +30,11 @@ public class Invazia
 	}
 
 	public int atk () {
-		return jednotiek * od.utok;
+		int utok = Common.UTOK_TEMNYCH;
+		if (od != null) {
+			utok = od.utok;
+		}
+		return jednotiek * utok;
 	}
 	public int def () {
 		return kam.def();

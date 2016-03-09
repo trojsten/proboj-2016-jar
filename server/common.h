@@ -28,6 +28,7 @@ struct bod {
 
 	bod operator- (const bod A) const ;
 	double dist () const ;
+	int casCestovania () const ;
 
 	static string nazovtyp () ;
 };
@@ -59,7 +60,7 @@ struct invazia {
 
 	invazia () ;
 	invazia (int odch, int prich, int vlast, mesto* odkial, mesto* kamze, int jedn) ;
-	
+
 	int atk () ; // celkova utocna sila invazie
 	int def () ; // celkova obranna sila obrancu
 

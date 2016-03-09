@@ -53,7 +53,10 @@ public class Stav
 			ArrayList<Invazia> novy = new ArrayList<Invazia>();
 			invPodlaCasu.push_back(novy);
 		}
-		Bunka utk = cely.get(od);
+		Bunka utk = null;
+		if (od >= 0) {
+			utk = cely.get(od);
+		}
 		Bunka obr = cely.get(kam);
 		Invazia inv = new Invazia(odchod, prichod, vlastnik, utk, obr, jednotiek);
 		invPodlaCasu.get(diff).add(inv);

@@ -128,7 +128,9 @@ int main(int argc, char *argv[]) {
 			while (r>0 && !validchar(klientAdr[r-1])) {
 				r--;
 			}
-			r++;
+			if (r==0 || (r<klientAdr.size() && klientAdr[r]!='/')) {
+				r++;
+			}
 			int l = r - 1;
 			while (l>0 && klientAdr[l-1]!='/') {
 				l--;
